@@ -16,6 +16,16 @@ public class IdTypeJpaEntity {
     @Column(name = "id")
     private UUID id;
 
-    //Completar
+    public IdTypeJpaEntity(UUID id) {
+        super();
+        setId(id);
+    }
 
+    private void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getId() {
+        return id;
+    }
 }

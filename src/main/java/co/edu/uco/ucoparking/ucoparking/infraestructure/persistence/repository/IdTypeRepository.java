@@ -11,7 +11,7 @@ public interface IdTypeRepository {
 
     void update(IdTypeEntity entity);
 
-    void delete(IdTypeEntity entity);
+    void delete(UUID id);
 
     IdTypeEntity findById(UUID id);
 

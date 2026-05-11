@@ -11,7 +11,7 @@ public interface InstitutionRepository {
 
     void update(InstitutionEntity entity);
 
-    void delete(InstitutionEntity entity);
+    void delete(UUID id);
 
     InstitutionEntity findById(UUID id);
 

@@ -12,7 +12,7 @@ public interface AcademicProgramRepository {
 
     void update(AcademicProgramEntity entity);
 
-    void delete(AcademicProgramEntity entity);
+    void delete(UUID id);
 
     AcademicProgramEntity findById(UUID id);
 

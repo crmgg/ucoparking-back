@@ -9,15 +9,11 @@ public interface StudentRepository {
 
     void create(StudentEntity entity);
 
-    void update(StudentEntity entity);
-
-    void delete(StudentEntity entity);
-
     StudentEntity findById(UUID id);
 
     List<StudentEntity> findByFilter(StudentEntity entity);
 
-    List<StudentEntity> findAll(StudentEntity entity);
+    List<StudentEntity> findAll(StudentEntity entity); //Pregunatr a farid si va con esto o solito ()
 
 }
 

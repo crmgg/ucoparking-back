@@ -1,10 +1,7 @@
 package co.edu.uco.ucoparking.ucoparking.infraestructure.persistence.sql.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
@@ -16,7 +13,103 @@ public class StudentJpaEntity {
     @Column(name = "id")
     private UUID id;
 
-    //Completar con los demás atributos de la entidad Estudiante, como nombre, apellido, correo electrónico, etc.
+    @ManyToOne
+    @JoinColumn
+    private AcademicProgramJpaEntity academicProgram; //Preguntar farid
 
+    @ManyToOne
+    @JoinColumn
+    private IdTypeJpaEntity idType; //Preguntar farid
 
+    @Column(name = "nombre")
+    private String name;
+
+    @Column(name = " Primer apellido")
+    private  String firstLastName;
+
+    @Column(name = " Segundo apellido")
+    private String secondLastName;
+
+    @Column(name = "Correo electronico")
+    private String email;
+
+    @Column(name = "Numero telefonico")
+    private String phoneNumber;
+
+    public StudentJpaEntity(UUID id, AcademicProgramJpaEntity academicProgram, IdTypeJpaEntity idType, String name,
+                            String firstLastName, String secondLastName, String email, String phoneNumber) {
+        super();
+        setId(id);
+        setAcademicProgram(academicProgram);
+        setIdType(idType);
+        setName(name);
+        setFirstLastName(firstLastName);
+        setSecondLastName(secondLastName);
+        setEmail(email);
+        setPhoneNumber(phoneNumber);
+    }
+
+    private void setId(UUID id) {
+        this.id = id;
+    }
+
+    private void setAcademicProgram(AcademicProgramJpaEntity academicProgram) {
+        this.academicProgram = academicProgram;
+    }
+
+    private void setIdType(IdTypeJpaEntity idType) {
+        this.idType = idType;
+    }
+
+    private void setName(String name) {
+        this.name = name;
+    }
+
+    private void setFirstLastName(String firstLastName) {
+        this.firstLastName = firstLastName;
+    }
+
+    private void setSecondLastName(String secondLastName) {
+        this.secondLastName = secondLastName;
+    }
+
+    private void setEmail(String email) {
+        this.email = email;
+    }
+
+    private void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public AcademicProgramJpaEntity getAcademicProgram() {
+        return academicProgram;
+    }
+
+    public IdTypeJpaEntity getIdType() {
+        return idType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFirstLastName() {
+        return firstLastName;
+    }
+
+    public String getSecondLastName() {
+        return secondLastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 }
