@@ -3,27 +3,36 @@ package co.edu.uco.ucoparking.ucoparking.infraestructure.persistence.entity;
 import co.edu.uco.ucoparking.ucoparking.infraestructure.persistence.sql.entity.AcademicProgramJpaEntity;
 import co.edu.uco.ucoparking.ucoparking.infraestructure.persistence.sql.entity.IdTypeJpaEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import java.util.UUID;
 
+@Entity
 public class StudentEntity {
-
+    @Id
     private UUID id;
 
-    private AcademicProgramJpaEntity academicProgram; //Preguntar farid
+    // Longitud y restricciones de la base de datos
+    @Column(length = 36, nullable = false)
+    private AcademicProgramJpaEntity academicProgram; // Relación, longitud UUID
 
-    private IdTypeJpaEntity idType; //Preguntar farid
+    @Column(length = 36, nullable = false)
+    private IdTypeJpaEntity idType; // Relación, longitud UUID
 
+    @Column(length = 50, nullable = false)
     private String name;
 
-    private  String firstLastName;
+    @Column(length = 50, nullable = false)
+    private String firstLastName;
 
+    @Column(length = 50)
     private String secondLastName;
 
+    @Column(length = 100, nullable = false)
     private String email;
 
+    @Column(length = 15, nullable = false)
     private String phoneNumber;
 
     private void setId(UUID id) {

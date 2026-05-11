@@ -10,30 +10,31 @@ import java.util.UUID;
 public class StudentJpaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "programa_academico", nullable = false)
     private AcademicProgramJpaEntity academicProgram; //Preguntar farid
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "tipo_identificacion", nullable = false)
     private IdTypeJpaEntity idType; //Preguntar farid
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", length = 50, nullable = false)
     private String name;
 
-    @Column(name = " Primer apellido")
+    @Column(name = " Primer apellido", length = 50, nullable = false)
     private  String firstLastName;
 
-    @Column(name = " Segundo apellido")
+    @Column(name = " Segundo apellido", length = 50, nullable = true)
     private String secondLastName;
 
-    @Column(name = "Correo electronico")
+    @Column(name = "Correo electronico", length = 100, nullable = false)
     private String email;
 
-    @Column(name = "Numero telefonico")
+    @Column(name = "Numero telefonico", length = 15, nullable = false)
     private String phoneNumber;
 
     public StudentJpaEntity(UUID id, AcademicProgramJpaEntity academicProgram, IdTypeJpaEntity idType, String name,

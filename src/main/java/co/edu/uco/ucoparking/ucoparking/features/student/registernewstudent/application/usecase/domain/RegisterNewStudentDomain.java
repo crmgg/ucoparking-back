@@ -20,57 +20,67 @@ public class RegisterNewStudentDomain {
         setIdNumber(idNumber);
         setEmail(email);
         setMobileNumber(mobileNumber);
-
-        // ¿Cómo garantizar que el objeto de dominio se cree de forma integral validado
-        // a nivel de tipo de dato, longitud, obligatoriedad, formato, rango sobre cada
-        // uno de los atributos involucrados?
     }
 
-    public UUID getId() {
-        return id;
+    // Validaciones de integridad y formato en los setters:
+    private void setAcademicProgram(UUID academicProgram) {
+        if (academicProgram == null) {
+            throw new IllegalArgumentException("El programa académico es obligatorio");
+        }
+        this.academicProgram = academicProgram;
     }
 
-    public UUID getAcademicProgram() {
-        return academicProgram;
+    private void setIdType(UUID idType) {
+        if (idType == null) {
+            throw new IllegalArgumentException("El tipo de identificación es obligatorio");
+        }
+        this.idType = idType;
     }
 
-    public UUID getIdType() {
-        return idType;
+    private void setIdNumber(String idNumber) {
+        if (idNumber == null || idNumber.isBlank()) {
+            throw new IllegalArgumentException("El número de identificación es obligatorio");
+        }
+        if (idNumber.length() < 5 || idNumber.length() > 20) {
+            throw new IllegalArgumentException("El número de identificación debe tener entre 5 y 20 caracteres");
+        }
+        this.idNumber = idNumber;
     }
 
-    public String getIdNumber() {
-        return idNumber;
+    private void setEmail(String email) {
+        if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new IllegalArgumentException("El email no tiene un formato válido");
+        }
+        this.email = email;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getMobileNumber() {
-        return mobileNumber;
+    private void setMobileNumber(String mobileNumber) {
+        if (mobileNumber == null || !mobileNumber.matches("^[0-9]{10}$")) {
+            throw new IllegalArgumentException("El número de celular debe tener 10 dígitos");
+        }
+        this.mobileNumber = mobileNumber;
     }
 
     private void generateId() {
         this.id = UUID.randomUUID();
     }
 
-    private void setAcademicProgram(UUID academicProgram) {
-        this.academicProgram = academicProgram;
+    public UUID getId() {
+        return id;
     }
-
-    private void setIdType(UUID idType) {
-        this.idType = idType;
+    public UUID getAcademicProgram() {
+        return academicProgram;
     }
-
-    private void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public UUID getIdType() {
+        return idType;
     }
-
-    private void setEmail(String email) {
-        this.email = email;
+    public String getIdNumber() {
+        return idNumber;
     }
-
-    private void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
+    public String getEmail() {
+        return email;
+    }
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 }

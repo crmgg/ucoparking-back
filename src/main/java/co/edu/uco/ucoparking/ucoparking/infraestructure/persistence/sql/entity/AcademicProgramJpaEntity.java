@@ -10,14 +10,15 @@ import java.util.UUID;
 public class AcademicProgramJpaEntity {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "institucion")
+    @JoinColumn(name = "institucion",  nullable = false)
     private InstitutionJpaEntity institution;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", length =  50, nullable = false)
     private String name;
 
     public AcademicProgramJpaEntity(UUID id, InstitutionJpaEntity institution, String name) {
