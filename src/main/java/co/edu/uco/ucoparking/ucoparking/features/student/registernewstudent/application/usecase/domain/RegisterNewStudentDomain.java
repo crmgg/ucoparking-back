@@ -7,7 +7,7 @@ public class RegisterNewStudentDomain {
     private UUID id;
     private UUID academicProgram;
     private UUID idType;
-    private String idNumber;
+    private String idNumber ;
     private String email;
     private String mobileNumber;
 
