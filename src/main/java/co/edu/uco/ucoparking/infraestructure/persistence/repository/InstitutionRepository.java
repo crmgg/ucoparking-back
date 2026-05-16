@@ -1,6 +1,6 @@
 package co.edu.uco.ucoparking.infraestructure.persistence.repository;
 
-import co.edu.uco.ucoparking.infraestructure.persistence.entity.InstitutionEntity;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql.jpa.entity.InstitutionEntity;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql.jpa;
 
-import co.edu.uco.ucoparking.infraestructure.persistence.entity.IdTypeEntity;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql.jpa.entity.IdTypeEntity;
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.IdTypeRepository;
-import co.edu.uco.ucoparking.infraestructure.persistence.sql.IdTypeJPARepository;
-import co.edu.uco.ucoparking.infraestructure.persistence.sql.entity.IdTypeJpaEntity;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.IdTypeJPARepository;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.IdTypeJpaEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
