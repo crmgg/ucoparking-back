@@ -7,7 +7,7 @@ import co.edu.uco.ucoparking.application.outputport.ParkingSpaceOutputPort;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 
 @RestController
-@RequestMapping("/uco-parking/v1/parking-spaces")
+@RequestMapping("/uco-parking/v1/students")
 public class ParkingSpaceOutputController {
 
     private final ParkingSpaceOutputPort parkingSpaceOutputPort;

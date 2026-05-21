@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/uco-parking/v1/parking-spaces/commands")
+@RequestMapping("/uco-parking/v1/students")
 public class ParkingSpaceInputController {
 
     private final OccupyParkingSpaceUseCase occupyParkingSpaceUseCase;
