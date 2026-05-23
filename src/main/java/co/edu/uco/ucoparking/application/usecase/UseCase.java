@@ -1,6 +1,8 @@
 package co.edu.uco.ucoparking.application.usecase;
 
+import reactor.core.publisher.Mono;
+
 public interface UseCase <D, R> {
 
-    R execute(D data);
+    Mono<R> execute(D data);
 }

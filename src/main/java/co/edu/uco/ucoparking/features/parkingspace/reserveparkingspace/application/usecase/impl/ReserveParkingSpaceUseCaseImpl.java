@@ -7,6 +7,7 @@ import co.edu.uco.ucoparking.infraestructure.persistence.repository.ParkingSpace
 import co.edu.uco.ucoparking.infraestructure.persistence.entity.ParkingSpaceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCase {
@@ -23,9 +24,8 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
     }
 
     @Override
-    public Void execute(ReserveParkingSpaceDomain data) {
+    public Mono<Void> execute(ReserveParkingSpaceDomain data) {
         ParkingSpaceEntity entity = mapper.domainToEntity(data);
-        repository.save(entity).subscribe();
-        return null;
+        return repository.save(entity).then();
     }
 }

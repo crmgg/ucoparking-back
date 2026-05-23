@@ -7,25 +7,25 @@ import co.edu.uco.ucoparking.infraestructure.persistence.repository.StudentRepos
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql.jpa.entity.StudentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class RegisterNewStudentUseCaseImpl implements RegisterNewStudentUseCase {
 
     private StudentRepository repository;
-    private RegisterNewStudentDomainToStudentEntityMapper mapper; // ← tipo corregido
+    private RegisterNewStudentDomainToStudentEntityMapper mapper;
 
     @Autowired
     public RegisterNewStudentUseCaseImpl(
             StudentRepository repository,
-            RegisterNewStudentDomainToStudentEntityMapper mapper) { // ← tipo corregido
+            RegisterNewStudentDomainToStudentEntityMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
-    public Void execute(RegisterNewStudentDomain data) {
+    public Mono<Void> execute(RegisterNewStudentDomain data) {
         StudentEntity entity = mapper.domainToEntity(data);
-        repository.create(entity);
-        return null;
+        return repository.create(entity).then();
     }
 }

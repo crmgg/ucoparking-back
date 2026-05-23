@@ -7,6 +7,7 @@ import co.edu.uco.ucoparking.features.student.registernewstudent.application.inp
 import co.edu.uco.ucoparking.features.student.registernewstudent.application.inputport.mapper.student.RegisterNewStudentMapper;
 import co.edu.uco.ucoparking.features.student.registernewstudent.application.usecase.RegisterNewStudentUseCase;
 import co.edu.uco.ucoparking.features.student.registernewstudent.application.usecase.domain.RegisterNewStudentDomain;
+import reactor.core.publisher.Mono;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -22,7 +23,7 @@ public class RegisterNewStudentInteractor implements RegisterNewStudentInputPort
     }
 
     @Override
-    public Void execute(RegisterNewStudentDTO data) {          // ← Void con mayúscula
+    public Mono<Void> execute(RegisterNewStudentDTO data) {          // ← Void con mayúscula
         RegisterNewStudentDomain domain = mapper.toDomain(data);
         return useCase.execute(domain);                        // ← return necesario
     }

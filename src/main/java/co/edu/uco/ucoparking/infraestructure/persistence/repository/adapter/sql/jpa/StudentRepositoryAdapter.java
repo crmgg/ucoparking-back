@@ -5,6 +5,7 @@ import co.edu.uco.ucoparking.infraestructure.persistence.repository.StudentRepos
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.StudentJPARepository;
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.StudentJpaEntity;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +22,11 @@ public class StudentRepositoryAdapter implements StudentRepository {
     }
 
     @Override
-    public void create(StudentEntity entity) {
-        StudentJpaEntity jpaEntity = null; //Mapper
-        repository.save(jpaEntity);
+    public Mono<Void> create(StudentEntity entity) {
+        return Mono.fromRunnable(() -> {
+            StudentJpaEntity jpaEntity = null; //Mapper
+            repository.save(jpaEntity);
+        });
     }
 
     @Override

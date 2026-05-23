@@ -7,6 +7,7 @@ import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicati
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.mapper.parkingspace.ReserveParkingSpaceMapper;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.ReserveParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.domain.ReserveParkingSpaceDomain;
+import reactor.core.publisher.Mono;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -22,7 +23,7 @@ public class ReserveParkingSpaceInteractor implements ReserveParkingSpaceInputPo
     }
 
     @Override
-    public Void execute(ReserveParkingSpaceDTO data) {
+    public Mono<Void> execute(ReserveParkingSpaceDTO data) {
         ReserveParkingSpaceDomain domain = mapper.toDomain(data);
         return useCase.execute(domain);
     }
