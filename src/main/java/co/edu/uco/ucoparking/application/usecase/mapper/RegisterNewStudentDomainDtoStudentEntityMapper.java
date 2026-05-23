@@ -11,22 +11,20 @@ import co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql.
 public interface RegisterNewStudentDomainDtoStudentEntityMapper extends MapperDomain<RegisterNewStudentDomain, RegisterNewStudentDTO> {
 
     @Override
-    @Mapping(target = "id", source = "id")
+    @Mapping(target = "id", ignore = true) // No hay setter para id en RegisterNewStudentDomain
     @Mapping(target = "academicProgram", source = "academicProgram")
     @Mapping(target = "idType", source = "idType")
-    @Mapping(target = "idTYpe", source = "idTYpe")
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "mobileNumber", source = "mobileNumber")
-    RegisterNewStudentDomain toDomain(RegisterNewStudentDTO dto);
-
-    @Override
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "academicProgram", source = "academicProgram")
-    @Mapping(target = "idType", source = "idType")
-    @Mapping(target = "idTYpe", source = "idTYpe")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "mobileNumber", source = "mobileNumber")
     RegisterNewStudentDTO toDTO(RegisterNewStudentDomain domain);
+
+    @Override
+    @Mapping(target = "id", ignore = true) // No hay setter para id en RegisterNewStudentDomain
+    @Mapping(target = "academicProgram", source = "academicProgram")
+    @Mapping(target = "idType", source = "idType")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "mobileNumber", source = "mobileNumber")
+    RegisterNewStudentDomain toDomain(RegisterNewStudentDTO dto);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "academicProgram", ignore = true)

@@ -9,6 +9,9 @@ import org.mapstruct.Mapping;
 public interface ReserveParkingSpaceDomainToParkingSpaceEntityMapper {
 
     @Mapping(source = "studentId", target = "occupiedByStudentId")
+    @Mapping(target = "occupiedByStudentName", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     ParkingSpaceEntity domainToEntity(ReserveParkingSpaceDomain domain);
 
 }

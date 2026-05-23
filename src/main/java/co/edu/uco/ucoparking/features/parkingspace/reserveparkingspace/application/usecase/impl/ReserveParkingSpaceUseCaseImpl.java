@@ -25,7 +25,7 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
     @Override
     public Void execute(ReserveParkingSpaceDomain data) {
         ParkingSpaceEntity entity = mapper.domainToEntity(data);
-        repository.create(entity);
+        repository.save(entity).subscribe();
         return null;
     }
 }
