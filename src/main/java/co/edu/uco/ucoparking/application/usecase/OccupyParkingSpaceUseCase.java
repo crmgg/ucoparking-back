@@ -3,7 +3,7 @@ package co.edu.uco.ucoparking.application.usecase;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.persistence.adapter.ParkingSpaceAdapter;
 import co.edu.uco.ucoparking.infraestructure.persistence.entity.ParkingSpaceEntity;
-import co.edu.uco.ucoparking.infraestructure.persistence.repository.ParkingSpaceRepository;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.r2dbc.ParkingSpaceRepository;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

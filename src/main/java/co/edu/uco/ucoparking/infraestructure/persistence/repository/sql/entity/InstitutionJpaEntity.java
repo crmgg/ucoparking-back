@@ -8,12 +8,14 @@ import java.util.UUID;
 @Table(name = "Institucion")
 public class InstitutionJpaEntity {
 
+    protected InstitutionJpaEntity() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
-    @Id
     @Column(name = "nombre", length = 50, nullable = false)
     private String name;
 

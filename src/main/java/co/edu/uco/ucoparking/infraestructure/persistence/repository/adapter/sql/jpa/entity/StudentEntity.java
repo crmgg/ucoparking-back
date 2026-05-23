@@ -2,45 +2,31 @@ package co.edu.uco.ucoparking.infraestructure.persistence.repository.adapter.sql
 
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.AcademicProgramJpaEntity;
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.IdTypeJpaEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
 import java.util.UUID;
 
-@Entity
+/**
+ * Modelo usado por el adaptador de persistencia. No es entidad JPA: el mapeo ORM de estudiante
+ * está en {@link co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.StudentJpaEntity}.
+ * Antes estaba mal anotado como {@code @Entity} con {@code @Column} sobre tipos entidad, lo que
+ * rompía el arranque de Hibernate.
+ */
 public class StudentEntity {
-    @Id
+
     private UUID id;
-
-    // Longitud y restricciones de la base de datos
-    @Column(length = 36, nullable = false)
-    private AcademicProgramJpaEntity academicProgram; // Relación, longitud UUID
-
-    @Column(length = 36, nullable = false)
-    private IdTypeJpaEntity idType; // Relación, longitud UUID
-
-    @Column(length = 50, nullable = false)
+    private AcademicProgramJpaEntity academicProgram;
+    private IdTypeJpaEntity idType;
     private String name;
-
-    @Column(length = 50, nullable = false)
     private String firstLastName;
-
-    @Column(length = 50)
     private String secondLastName;
-
-    @Column(length = 100, nullable = false)
     private String email;
-
-    @Column(length = 15, nullable = false)
     private String phoneNumber;
 
-    private void setId(UUID id) {
-        this.id = id;
+    public StudentEntity() {
     }
 
-    public StudentEntity(UUID id, AcademicProgramJpaEntity academicProgram, IdTypeJpaEntity idType, String name, String firstLastName,
-                         String secondLastName, String email, String phoneNumber) {
+    public StudentEntity(UUID id, AcademicProgramJpaEntity academicProgram, IdTypeJpaEntity idType, String name,
+                         String firstLastName, String secondLastName, String email, String phoneNumber) {
         this.id = id;
         this.academicProgram = academicProgram;
         this.idType = idType;
@@ -48,34 +34,6 @@ public class StudentEntity {
         this.firstLastName = firstLastName;
         this.secondLastName = secondLastName;
         this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
-
-    private void setAcademicProgram(AcademicProgramJpaEntity academicProgram) {
-        this.academicProgram = academicProgram;
-    }
-
-    private void setIdType(IdTypeJpaEntity idType) {
-        this.idType = idType;
-    }
-
-    private void setName(String name) {
-        this.name = name;
-    }
-
-    private void setFirstLastName(String firstLastName) {
-        this.firstLastName = firstLastName;
-    }
-
-    private void setSecondLastName(String secondLastName) {
-        this.secondLastName = secondLastName;
-    }
-
-    private void setEmail(String email) {
-        this.email = email;
-    }
-
-    private void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -83,31 +41,63 @@ public class StudentEntity {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public AcademicProgramJpaEntity getAcademicProgram() {
         return academicProgram;
+    }
+
+    public void setAcademicProgram(AcademicProgramJpaEntity academicProgram) {
+        this.academicProgram = academicProgram;
     }
 
     public IdTypeJpaEntity getIdType() {
         return idType;
     }
 
+    public void setIdType(IdTypeJpaEntity idType) {
+        this.idType = idType;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getFirstLastName() {
         return firstLastName;
     }
 
+    public void setFirstLastName(String firstLastName) {
+        this.firstLastName = firstLastName;
+    }
+
     public String getSecondLastName() {
         return secondLastName;
+    }
+
+    public void setSecondLastName(String secondLastName) {
+        this.secondLastName = secondLastName;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

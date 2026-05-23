@@ -3,7 +3,7 @@ package co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicat
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.ReserveParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.domain.ReserveParkingSpaceDomain;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.impl.mapper.ReserveParkingSpaceDomainToParkingSpaceEntityMapper;
-import co.edu.uco.ucoparking.infraestructure.persistence.repository.ParkingSpaceRepository;
+import co.edu.uco.ucoparking.infraestructure.persistence.repository.r2dbc.ParkingSpaceRepository;
 import co.edu.uco.ucoparking.infraestructure.persistence.entity.ParkingSpaceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
