@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secretos locales ###
+.env
+application-local.properties
+src/main/resources/application-local.properties
+.infisical.json
