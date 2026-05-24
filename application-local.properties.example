@@ -1,0 +1,4 @@
+# Copiar a application-local.properties (raíz del proyecto o src/main/resources).
+# Ese archivo está en .gitignore — no subir contraseñas al repositorio.
+
+DB_PASSWORD=tu-contraseña-local
