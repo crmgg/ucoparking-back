@@ -10,38 +10,16 @@ public class RegisterNewStudentDTO {
     private String email;
     private String mobileNumber;
 
+    public RegisterNewStudentDTO() {
+    }
+
     public RegisterNewStudentDTO(UUID id, UUID academicProgram, UUID idType,
                                  String idNumber, String email, String mobileNumber) {
-        super();
-        setId(id);
-        setAcademicProgram(academicProgram);
-        setIdType(idType);
-        setIdNumber(idNumber);
-        setEmail(email);
-        setMobileNumber(mobileNumber);
-    }
-
-    private void setId(UUID id) {
         this.id = id;
-    }
-
-    private void setAcademicProgram(UUID academicProgram) {
         this.academicProgram = academicProgram;
-    }
-
-    private void setIdType(UUID idType) {
         this.idType = idType;
-    }
-
-    private void setIdNumber(String idNumber) {
         this.idNumber = idNumber;
-    }
-
-    private void setEmail(String email) {
         this.email = email;
-    }
-
-    private void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
@@ -49,23 +27,47 @@ public class RegisterNewStudentDTO {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public UUID getAcademicProgram() {
         return academicProgram;
+    }
+
+    public void setAcademicProgram(UUID academicProgram) {
+        this.academicProgram = academicProgram;
     }
 
     public UUID getIdType() {
         return idType;
     }
 
+    public void setIdType(UUID idType) {
+        this.idType = idType;
+    }
+
     public String getIdNumber() {
         return idNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getMobileNumber() {
         return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 }

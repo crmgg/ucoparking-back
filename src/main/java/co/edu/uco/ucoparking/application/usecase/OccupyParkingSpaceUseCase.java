@@ -1,5 +1,8 @@
 package co.edu.uco.ucoparking.application.usecase;
 
+import co.edu.uco.ucoparking.crosscutting.exception.UcoParkingException;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceIsAvailableRule;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.StudentDoesNotHaveActiveParkingSpaceRule;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.persistence.adapter.ParkingSpaceAdapter;
 import co.edu.uco.ucoparking.infraestructure.persistence.entity.ParkingSpaceEntity;
@@ -9,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class OccupyParkingSpaceUseCase {
+
+    private static final String OCCUPIED_STATUS = "OCCUPIED";
 
     private final ParkingSpaceRepository parkingSpaceRepository;
     private final ParkingSpaceAdapter parkingSpaceAdapter;
@@ -21,13 +26,22 @@ public class OccupyParkingSpaceUseCase {
 
     public Mono<ParkingSpaceDTO> execute(Integer spaceNumber, String studentId, String studentName) {
         return parkingSpaceRepository.findBySpaceNumber(spaceNumber)
-                .flatMap(space -> {
-                    if (!"AVAILABLE".equals(space.getStatus())) {
-                        return Mono.error(new IllegalStateException(
-                                "El espacio " + spaceNumber + " no está disponible"));
-                    }
+                .switchIfEmpty(Mono.error(UcoParkingException.create(
+                        "El parqueadero " + spaceNumber + " no existe.",
+                        "No se encontró parqueadero con número: " + spaceNumber)))
+                .flatMap(space -> validateAndOccupy(space, studentId, studentName))
+                .map(this::mapEntityToDTO);
+    }
 
-                    space.setStatus("OCCUPIED");
+    private Mono<ParkingSpaceEntity> validateAndOccupy(ParkingSpaceEntity space, String studentId, String studentName) {
+        ParkingSpaceIsAvailableRule.executeRule(space.getStatus(), space.getSpaceNumber());
+
+        return parkingSpaceRepository.findByOccupiedByStudentIdAndStatus(studentId, OCCUPIED_STATUS)
+                .hasElement()
+                .flatMap(hasActiveSpace -> {
+                    StudentDoesNotHaveActiveParkingSpaceRule.executeRule(hasActiveSpace);
+
+                    space.setStatus(OCCUPIED_STATUS);
                     space.setOccupiedByStudentId(studentId);
                     space.setOccupiedByStudentName(studentName);
                     space.setUpdatedAt(System.currentTimeMillis());
@@ -37,8 +51,7 @@ public class OccupyParkingSpaceUseCase {
                                 ParkingSpaceDTO dto = mapEntityToDTO(updatedSpace);
                                 parkingSpaceAdapter.emitParkingSpaceUpdate(dto);
                             });
-                })
-                .map(this::mapEntityToDTO);
+                });
     }
 
     private ParkingSpaceDTO mapEntityToDTO(ParkingSpaceEntity entity) {

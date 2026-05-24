@@ -1,18 +1,34 @@
 package co.edu.uco.ucoparking.infraestructure.controller.student;
 
+import co.edu.uco.ucoparking.application.outputport.ParkingSpaceOutputPort;
 import co.edu.uco.ucoparking.application.usecase.OccupyParkingSpaceUseCase;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/uco-parking/v1/students")
+@RequestMapping("/v1/students")
 public class ParkingSpaceInputController {
 
     private final OccupyParkingSpaceUseCase occupyParkingSpaceUseCase;
+    private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
+    private final ParkingSpaceOutputPort parkingSpaceOutputPort;
 
-    public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase) {
+    public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
+                                       ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
+                                       ParkingSpaceOutputPort parkingSpaceOutputPort) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
+        this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
+        this.parkingSpaceOutputPort = parkingSpaceOutputPort;
+    }
+
+    @PostMapping("/reserve")
+    @CrossOrigin(origins = "*")
+    public Mono<ParkingSpaceDTO> reserveParkingSpace(@RequestBody ReserveParkingSpaceDTO request) {
+        return reserveParkingSpaceInputPort.execute(request)
+                .then(parkingSpaceOutputPort.getParkingSpaceByNumber(request.getSpaceNumber()));
     }
 
     @PostMapping("/occupy")

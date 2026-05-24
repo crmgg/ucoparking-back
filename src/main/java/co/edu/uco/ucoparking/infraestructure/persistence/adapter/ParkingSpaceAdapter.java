@@ -42,6 +42,11 @@ public class ParkingSpaceAdapter implements ParkingSpaceOutputPort {
     }
 
     @Override
+    public Flux<ParkingSpaceDTO> subscribeToAllParkingSpaceUpdates() {
+        return parkingSpaceUpdates.asFlux();
+    }
+
+    @Override
     public Flux<ParkingSpaceDTO> getOccupiedParkingSpaces() {
         return parkingSpaceRepository.findByStatus("OCCUPIED")
                 .map(this::mapEntityToDTO);
