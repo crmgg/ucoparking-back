@@ -2,6 +2,7 @@ package co.edu.uco.ucoparking.infraestructure.controller.student;
 
 import co.edu.uco.ucoparking.application.outputport.ParkingSpaceOutputPort;
 import co.edu.uco.ucoparking.application.usecase.OccupyParkingSpaceUseCase;
+import co.edu.uco.ucoparking.application.usecase.ReleaseParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
@@ -13,13 +14,16 @@ import reactor.core.publisher.Mono;
 public class ParkingSpaceInputController {
 
     private final OccupyParkingSpaceUseCase occupyParkingSpaceUseCase;
+    private final ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase;
     private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
     private final ParkingSpaceOutputPort parkingSpaceOutputPort;
 
     public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
+                                       ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase,
                                        ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
                                        ParkingSpaceOutputPort parkingSpaceOutputPort) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
+        this.releaseParkingSpaceUseCase = releaseParkingSpaceUseCase;
         this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
         this.parkingSpaceOutputPort = parkingSpaceOutputPort;
     }
@@ -31,6 +35,15 @@ public class ParkingSpaceInputController {
                 .then(parkingSpaceOutputPort.getParkingSpaceByNumber(request.getSpaceNumber()));
     }
 
+    @PostMapping("/release")
+    @CrossOrigin(origins = "*")
+    public Mono<ParkingSpaceDTO> releaseParkingSpace(@RequestBody ReleaseParkingSpaceRequest request) {
+        return releaseParkingSpaceUseCase.execute(
+                request.getSpaceNumber(),
+                request.getStudentId()
+        );
+    }
+
     @PostMapping("/occupy")
     @CrossOrigin(origins = "*")
     public Mono<ParkingSpaceDTO> occupyParkingSpace(@RequestBody OccupyParkingSpaceRequest request) {
@@ -39,6 +52,27 @@ public class ParkingSpaceInputController {
                 request.getStudentId(),
                 request.getStudentName()
         );
+    }
+
+    public static class ReleaseParkingSpaceRequest {
+        private Integer spaceNumber;
+        private String studentId;
+
+        public Integer getSpaceNumber() {
+            return spaceNumber;
+        }
+
+        public void setSpaceNumber(Integer spaceNumber) {
+            this.spaceNumber = spaceNumber;
+        }
+
+        public String getStudentId() {
+            return studentId;
+        }
+
+        public void setStudentId(String studentId) {
+            this.studentId = studentId;
+        }
     }
 
     public static class OccupyParkingSpaceRequest {

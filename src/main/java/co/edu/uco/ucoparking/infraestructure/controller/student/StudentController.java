@@ -11,7 +11,6 @@ import co.edu.uco.ucoparking.crosscutting.exception.UcoParkingException;
 import co.edu.uco.ucoparking.features.student.registernewstudent.application.inputport.RegisterNewStudentInputPort;
 import co.edu.uco.ucoparking.features.student.registernewstudent.application.inputport.dto.RegisterNewStudentDTO;
 import co.edu.uco.ucoparking.infraestructure.controller.Response;
-import co.edu.uco.ucoparking.infraestructure.service.MessageCatalogService;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -19,12 +18,9 @@ import reactor.core.publisher.Mono;
 public class StudentController {
 
     private final RegisterNewStudentInputPort inputPort;
-    private final MessageCatalogService messageCatalogService;
 
-    public StudentController(RegisterNewStudentInputPort inputPort,
-                             MessageCatalogService messageCatalogService) {
+    public StudentController(RegisterNewStudentInputPort inputPort) {
         this.inputPort = inputPort;
-        this.messageCatalogService = messageCatalogService;
     }
 
     @PostMapping
@@ -32,7 +28,7 @@ public class StudentController {
         return inputPort.execute(student)
                 .then(Mono.fromCallable(() -> {
                     Response<Void> response = Response.createSuccededResponse();
-                    response.addMessage(messageCatalogService.getMessage("STUDENT_REGISTERED", "es"));
+                    response.addMessage("Estudiante registrado exitosamente");
                     return ResponseEntity.status(HttpStatus.CREATED).body(response);
                 }))
                 .onErrorResume(UcoParkingException.class, exception -> {
