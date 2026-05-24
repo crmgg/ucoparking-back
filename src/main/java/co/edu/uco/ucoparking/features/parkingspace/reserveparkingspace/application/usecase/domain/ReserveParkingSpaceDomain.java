@@ -6,11 +6,11 @@ public class ReserveParkingSpaceDomain {
 
     private UUID id;
     private Integer spaceNumber;
-    private UUID studentId;
+    private String studentId;
     private String studentName;
     private String status;
 
-    public ReserveParkingSpaceDomain(Integer spaceNumber, UUID studentId, String studentName, String status) {
+    public ReserveParkingSpaceDomain(Integer spaceNumber, String studentId, String studentName, String status) {
         super();
         generateId();
         setSpaceNumber(spaceNumber);
@@ -26,8 +26,8 @@ public class ReserveParkingSpaceDomain {
         this.spaceNumber = spaceNumber;
     }
 
-    private void setStudentId(UUID studentId) {
-        if (studentId == null) {
+    private void setStudentId(String studentId) {
+        if (studentId == null || studentId.isBlank()) {
             throw new IllegalArgumentException("El ID del estudiante es obligatorio");
         }
         this.studentId = studentId;
@@ -59,7 +59,7 @@ public class ReserveParkingSpaceDomain {
         return spaceNumber;
     }
 
-    public UUID getStudentId() {
+    public String getStudentId() {
         return studentId;
     }
 

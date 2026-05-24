@@ -42,13 +42,13 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
     private Mono<ParkingSpaceEntity> validateAndReserve(ParkingSpaceEntity space, ReserveParkingSpaceDomain data) {
         ParkingSpaceIsAvailableRule.executeRule(space.getStatus(), space.getSpaceNumber());
 
-        return repository.findByOccupiedByStudentIdAndStatus(data.getStudentId().toString(), OCCUPIED_STATUS)
+        return repository.findByOccupiedByStudentIdAndStatus(data.getStudentId(), OCCUPIED_STATUS)
                 .hasElement()
                 .flatMap(hasActiveSpace -> {
                     StudentDoesNotHaveActiveParkingSpaceRule.executeRule(hasActiveSpace);
 
                     space.setStatus(OCCUPIED_STATUS);
-                    space.setOccupiedByStudentId(data.getStudentId().toString());
+                    space.setOccupiedByStudentId(data.getStudentId());
                     space.setOccupiedByStudentName(data.getStudentName());
                     space.setUpdatedAt(System.currentTimeMillis());
 

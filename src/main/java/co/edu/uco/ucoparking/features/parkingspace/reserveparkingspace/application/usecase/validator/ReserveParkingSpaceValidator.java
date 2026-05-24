@@ -1,7 +1,6 @@
 package co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.validator;
 
 import co.edu.uco.ucoparking.application.usecase.rule.generics.IsStringPresentRule;
-import co.edu.uco.ucoparking.application.usecase.rule.generics.IsUUIDPresentRule;
 import co.edu.uco.ucoparking.application.usecase.validator.Validator;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceNumberIsValidRule;
@@ -18,7 +17,7 @@ public class ReserveParkingSpaceValidator implements Validator {
 
         ParkingSpaceNumberIsValidRule.executeRule(dto.getSpaceNumber());
         ParkingSpaceNumberIsWithinRangeRule.executeRule(dto.getSpaceNumber());
-        IsUUIDPresentRule.executeRule(dto.getStudentId(), "estudiante");
+        IsStringPresentRule.executeRule(dto.getStudentId(), "estudiante", true);
         IsStringPresentRule.executeRule(dto.getStudentName(), "nombre del estudiante", true);
         StudentNameLengthValueIsValidRule.executeRule(dto.getStudentName());
     }
