@@ -7,7 +7,10 @@ import co.edu.uco.ucoparking.infraestructure.persistence.repository.sql.entity.I
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {
+        AcademicProgramJpaEntity.class,
+        IdTypeJpaEntity.class
+})
 public interface RegisterNewStudentDomainToStudentEntityMapper {
 
     @Mapping(target = "academicProgram", expression = "java(new AcademicProgramJpaEntity(domain.getAcademicProgram(), null, null))")
