@@ -5,7 +5,7 @@ import co.edu.uco.ucoparking.crosscutting.exception.UcoParkingException;
 
 public class ParkingSpaceNumberIsWithinRangeRule implements Rule {
 
-    private static final int MAX_SPACE_NUMBER = 100;
+    private static final int MAX_SPACE_NUMBER = 11;
     private static final Rule instance = new ParkingSpaceNumberIsWithinRangeRule();
 
     private ParkingSpaceNumberIsWithinRangeRule() {

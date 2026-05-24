@@ -1,7 +1,6 @@
 package co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.impl;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.mapper.parkingspace.ReserveParkingSpaceMapper;
@@ -11,7 +10,6 @@ import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicati
 import reactor.core.publisher.Mono;
 
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class ReserveParkingSpaceInteractor implements ReserveParkingSpaceInputPort {
 
     private final ReserveParkingSpaceUseCase useCase;

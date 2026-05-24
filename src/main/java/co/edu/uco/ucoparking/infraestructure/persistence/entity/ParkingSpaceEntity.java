@@ -3,31 +3,39 @@ package co.edu.uco.ucoparking.infraestructure.persistence.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ParkingSpaces")
-@org.springframework.data.relational.core.mapping.Table("ParkingSpaces")
+@Table(name = "parking_spaces")
+@org.springframework.data.relational.core.mapping.Table("parking_spaces")
 public class ParkingSpaceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @org.springframework.data.annotation.Id
+    @jakarta.persistence.Column(name = "id")
+    @org.springframework.data.relational.core.mapping.Column("id")
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @jakarta.persistence.Column(name = "space_number", nullable = false, unique = true)
+    @org.springframework.data.relational.core.mapping.Column("space_number")
     private Integer spaceNumber;
 
-    @Column(nullable = false)
+    @jakarta.persistence.Column(name = "status", nullable = false)
+    @org.springframework.data.relational.core.mapping.Column("status")
     private String status;
 
-    @Column(nullable = true)
+    @jakarta.persistence.Column(name = "occupied_by_student_id")
+    @org.springframework.data.relational.core.mapping.Column("occupied_by_student_id")
     private String occupiedByStudentId;
 
-    @Column(nullable = true)
+    @jakarta.persistence.Column(name = "occupied_by_student_name")
+    @org.springframework.data.relational.core.mapping.Column("occupied_by_student_name")
     private String occupiedByStudentName;
 
-    @Column(nullable = false)
+    @jakarta.persistence.Column(name = "created_at", nullable = false)
+    @org.springframework.data.relational.core.mapping.Column("created_at")
     private Long createdAt;
 
-    @Column(nullable = false)
+    @jakarta.persistence.Column(name = "updated_at", nullable = false)
+    @org.springframework.data.relational.core.mapping.Column("updated_at")
     private Long updatedAt;
 
     public ParkingSpaceEntity() {

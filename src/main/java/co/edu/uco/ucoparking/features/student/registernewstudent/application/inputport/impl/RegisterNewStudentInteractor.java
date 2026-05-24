@@ -11,7 +11,7 @@ import co.edu.uco.ucoparking.features.student.registernewstudent.application.use
 import reactor.core.publisher.Mono;
 
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(transactionManager = "transactionManager", rollbackFor = Exception.class)
 public class RegisterNewStudentInteractor implements RegisterNewStudentInputPort {
 
     private final RegisterNewStudentUseCase useCase;
