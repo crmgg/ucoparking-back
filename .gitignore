@@ -34,6 +34,6 @@ build/
 
 ### Secretos locales ###
 .env
+infisical-secrets.env
 application-local.properties
 src/main/resources/application-local.properties
-.infisical.json
