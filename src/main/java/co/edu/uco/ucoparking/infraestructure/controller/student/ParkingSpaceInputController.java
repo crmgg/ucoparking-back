@@ -1,6 +1,5 @@
 package co.edu.uco.ucoparking.infraestructure.controller.student;
 
-import co.edu.uco.ucoparking.application.outputport.ParkingSpaceOutputPort;
 import co.edu.uco.ucoparking.application.usecase.OccupyParkingSpaceUseCase;
 import co.edu.uco.ucoparking.application.usecase.ReleaseParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
@@ -17,18 +16,15 @@ public class ParkingSpaceInputController {
     private final OccupyParkingSpaceUseCase occupyParkingSpaceUseCase;
     private final ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase;
     private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
-    private final ParkingSpaceOutputPort parkingSpaceOutputPort;
     private final NotificationGatewayService notificationGatewayService;
 
     public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
                                        ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase,
                                        ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
-                                       ParkingSpaceOutputPort parkingSpaceOutputPort,
                                        NotificationGatewayService notificationGatewayService) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
         this.releaseParkingSpaceUseCase = releaseParkingSpaceUseCase;
         this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
-        this.parkingSpaceOutputPort = parkingSpaceOutputPort;
         this.notificationGatewayService = notificationGatewayService;
     }
 
@@ -36,7 +32,6 @@ public class ParkingSpaceInputController {
     @CrossOrigin(origins = "*")
     public Mono<ParkingSpaceDTO> reserveParkingSpace(@RequestBody ReserveParkingSpaceDTO request) {
         return reserveParkingSpaceInputPort.execute(request)
-                .then(parkingSpaceOutputPort.getParkingSpaceByNumber(request.getSpaceNumber()))
                 .flatMap(dto -> notificationGatewayService.sendReservationConfirmed(
                                 request.getStudentEmail(),
                                 request.getStudentName(),

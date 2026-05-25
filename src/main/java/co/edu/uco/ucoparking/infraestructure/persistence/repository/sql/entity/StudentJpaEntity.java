@@ -37,6 +37,9 @@ public class StudentJpaEntity {
     @Column(name = "Numero telefonico", length = 15, nullable = false)
     private String phoneNumber;
 
+    protected StudentJpaEntity() {
+    }
+
     public StudentJpaEntity(UUID id, AcademicProgramJpaEntity academicProgram, IdTypeJpaEntity idType, String name,
                             String firstLastName, String secondLastName, String email, String phoneNumber) {
         super();

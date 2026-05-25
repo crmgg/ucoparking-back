@@ -30,13 +30,13 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
     }
 
     @Override
-    public Mono<Void> execute(ReserveParkingSpaceDomain data) {
+    public Mono<ParkingSpaceDTO> execute(ReserveParkingSpaceDomain data) {
         return repository.findBySpaceNumber(data.getSpaceNumber())
                 .switchIfEmpty(Mono.error(UcoParkingException.create(
                         "El parqueadero " + data.getSpaceNumber() + " no existe.",
                         "No se encontró parqueadero con número: " + data.getSpaceNumber())))
                 .flatMap(space -> validateAndReserve(space, data))
-                .then();
+                .map(this::mapEntityToDTO);
     }
 
     private Mono<ParkingSpaceEntity> validateAndReserve(ParkingSpaceEntity space, ReserveParkingSpaceDomain data) {

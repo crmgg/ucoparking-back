@@ -42,6 +42,7 @@ public class NotificationGatewayService {
 
     public Mono<Void> sendReservationConfirmed(String recipient, String studentName, Integer spaceNumber) {
         if (recipient == null || recipient.isBlank()) {
+            log.warn("Reserva sin studentEmail: no se envia correo de confirmacion");
             return Mono.empty();
         }
 
@@ -55,6 +56,14 @@ public class NotificationGatewayService {
         ));
 
         return send(request)
+                .doOnNext(response -> {
+                    if ("SENT".equals(response.getStatus())) {
+                        log.info("Correo de reserva enviado a {}", recipient);
+                    } else {
+                        log.warn("Correo de reserva no enviado: status={} detail={}",
+                                response.getStatus(), response.getDetail());
+                    }
+                })
                 .doOnError(error -> log.warn("No se pudo enviar correo de reserva: {}", error.getMessage()))
                 .onErrorComplete()
                 .then();
@@ -108,7 +117,7 @@ public class NotificationGatewayService {
         if (!emailEnabled) {
             response.setStatus("SKIPPED");
             response.setDetail("Correo desactivado. Activa NOTIFICATION_EMAIL_ENABLED=true y SMTP_*.");
-            log.info("Notification Gateway (email desactivado): to={} subject={}", request.getRecipient(), subject);
+            log.warn("Notification Gateway (email desactivado): to={} template={}", request.getRecipient(), request.getTemplateCode());
             return response;
         }
 

@@ -21,6 +21,9 @@ public class AcademicProgramJpaEntity {
     @Column(name = "nombre", length =  50, nullable = false)
     private String name;
 
+    protected AcademicProgramJpaEntity() {
+    }
+
     public AcademicProgramJpaEntity(UUID id, InstitutionJpaEntity institution, String name) {
         super();
         setId(id);

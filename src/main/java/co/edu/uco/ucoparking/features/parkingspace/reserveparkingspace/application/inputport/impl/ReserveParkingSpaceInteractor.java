@@ -7,6 +7,7 @@ import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicati
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.ReserveParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.domain.ReserveParkingSpaceDomain;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.validator.ReserveParkingSpaceValidator;
+import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -25,7 +26,7 @@ public class ReserveParkingSpaceInteractor implements ReserveParkingSpaceInputPo
     }
 
     @Override
-    public Mono<Void> execute(ReserveParkingSpaceDTO data) {
+    public Mono<ParkingSpaceDTO> execute(ReserveParkingSpaceDTO data) {
         if (data.getStatus() == null || data.getStatus().isBlank()) {
             data.setStatus("OCCUPIED");
         }

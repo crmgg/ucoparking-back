@@ -14,6 +14,9 @@ public class IdTypeJpaEntity {
     @Column(name = "id")
     private UUID id;
 
+    protected IdTypeJpaEntity() {
+    }
+
     public IdTypeJpaEntity(UUID id) {
         super();
         setId(id);
