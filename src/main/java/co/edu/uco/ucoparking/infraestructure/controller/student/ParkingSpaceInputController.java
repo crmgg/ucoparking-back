@@ -6,6 +6,7 @@ import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicati
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.service.NotificationGatewayService;
+import co.edu.uco.ucoparking.infraestructure.service.StudentNotificationEmailResolver;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -17,26 +18,33 @@ public class ParkingSpaceInputController {
     private final ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase;
     private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
     private final NotificationGatewayService notificationGatewayService;
+    private final StudentNotificationEmailResolver studentNotificationEmailResolver;
 
     public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
                                        ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase,
                                        ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
-                                       NotificationGatewayService notificationGatewayService) {
+                                       NotificationGatewayService notificationGatewayService,
+                                       StudentNotificationEmailResolver studentNotificationEmailResolver) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
         this.releaseParkingSpaceUseCase = releaseParkingSpaceUseCase;
         this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
         this.notificationGatewayService = notificationGatewayService;
+        this.studentNotificationEmailResolver = studentNotificationEmailResolver;
     }
 
     @PostMapping("/reserve")
     @CrossOrigin(origins = "*")
     public Mono<ParkingSpaceDTO> reserveParkingSpace(@RequestBody ReserveParkingSpaceDTO request) {
         return reserveParkingSpaceInputPort.execute(request)
-                .flatMap(dto -> notificationGatewayService.sendReservationConfirmed(
-                                request.getStudentEmail(),
-                                request.getStudentName(),
-                                request.getSpaceNumber())
-                        .thenReturn(dto));
+                .flatMap(dto -> {
+                    String recipient = studentNotificationEmailResolver.resolve(
+                            request.getStudentEmail(), request.getStudentName());
+                    return notificationGatewayService.sendReservationConfirmed(
+                                    recipient,
+                                    request.getStudentName(),
+                                    request.getSpaceNumber())
+                            .thenReturn(dto);
+                });
     }
 
     @PostMapping("/release")
