@@ -64,7 +64,7 @@ public class NotificationGatewayService {
                                 response.getStatus(), response.getDetail());
                     }
                 })
-                .doOnError(error -> log.warn("No se pudo enviar correo de reserva: {}", error.getMessage()))
+                .doOnError(error -> log.error("No se pudo enviar correo de reserva a {}: {}", recipient, error.getMessage()))
                 .onErrorComplete()
                 .then();
     }

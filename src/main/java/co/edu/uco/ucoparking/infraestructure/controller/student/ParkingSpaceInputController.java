@@ -7,12 +7,16 @@ import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.applicati
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.service.NotificationGatewayService;
 import co.edu.uco.ucoparking.infraestructure.service.StudentNotificationEmailResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/v1/students")
 public class ParkingSpaceInputController {
+
+    private static final Logger log = LoggerFactory.getLogger(ParkingSpaceInputController.class);
 
     private final OccupyParkingSpaceUseCase occupyParkingSpaceUseCase;
     private final ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase;
@@ -39,6 +43,12 @@ public class ParkingSpaceInputController {
                 .flatMap(dto -> {
                     String recipient = studentNotificationEmailResolver.resolve(
                             request.getStudentEmail(), request.getStudentName());
+                    if (recipient == null || recipient.isBlank()) {
+                        log.warn("Reserva cupo {} sin correo resuelto (studentEmail={}, studentName={})",
+                                request.getSpaceNumber(), request.getStudentEmail(), request.getStudentName());
+                    } else {
+                        log.info("Enviando correo de reserva cupo {} a {}", request.getSpaceNumber(), recipient);
+                    }
                     return notificationGatewayService.sendReservationConfirmed(
                                     recipient,
                                     request.getStudentName(),
