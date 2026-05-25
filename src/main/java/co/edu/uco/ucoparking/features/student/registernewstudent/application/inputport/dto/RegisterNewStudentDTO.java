@@ -7,6 +7,7 @@ public class RegisterNewStudentDTO {
     private UUID academicProgram;
     private UUID idType;
     private String idNumber;
+    private String name;
     private String email;
     private String mobileNumber;
 
@@ -14,11 +15,12 @@ public class RegisterNewStudentDTO {
     }
 
     public RegisterNewStudentDTO(UUID id, UUID academicProgram, UUID idType,
-                                 String idNumber, String email, String mobileNumber) {
+                                 String idNumber, String name, String email, String mobileNumber) {
         this.id = id;
         this.academicProgram = academicProgram;
         this.idType = idType;
         this.idNumber = idNumber;
+        this.name = name;
         this.email = email;
         this.mobileNumber = mobileNumber;
     }
@@ -53,6 +55,14 @@ public class RegisterNewStudentDTO {
 
     public void setIdNumber(String idNumber) {
         this.idNumber = idNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

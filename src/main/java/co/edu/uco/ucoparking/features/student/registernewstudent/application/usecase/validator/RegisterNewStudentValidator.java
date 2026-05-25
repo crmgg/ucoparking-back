@@ -20,6 +20,8 @@ public class RegisterNewStudentValidator implements Validator {
         IsUUIDPresentRule.executeRule(dto.getIdType(), "tipo de identificación");
         IsStringPresentRule.executeRule(dto.getIdNumber(), "número de identificación", true);
         StringLengthValueIsValidRule.executeRule(dto.getIdNumber(), "número de identificación", 5, 20, true);
+        IsStringPresentRule.executeRule(dto.getName(), "nombre", true);
+        StringLengthValueIsValidRule.executeRule(dto.getName(), "nombre", 2, 100, true);
         IsStringPresentRule.executeRule(dto.getEmail(), "correo electrónico", true);
         StudentEmailFormatValueIsValidRule.executeRule(dto.getEmail());
         IsStringPresentRule.executeRule(dto.getMobileNumber(), "número de celular", true);

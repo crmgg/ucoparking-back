@@ -7,17 +7,19 @@ public class RegisterNewStudentDomain {
     private UUID id;
     private UUID academicProgram;
     private UUID idType;
-    private String idNumber ;
+    private String idNumber;
+    private String name;
     private String email;
     private String mobileNumber;
 
-    public RegisterNewStudentDomain(UUID academicProgram, UUID idType, String idNumber, String email,
+    public RegisterNewStudentDomain(UUID academicProgram, UUID idType, String idNumber, String name, String email,
                                     String mobileNumber) {
         super();
         generateId();
         setAcademicProgram(academicProgram);
         setIdType(idType);
         setIdNumber(idNumber);
+        setName(name);
         setEmail(email);
         setMobileNumber(mobileNumber);
     }
@@ -45,6 +47,16 @@ public class RegisterNewStudentDomain {
             throw new IllegalArgumentException("El número de identificación debe tener entre 5 y 20 caracteres");
         }
         this.idNumber = idNumber;
+    }
+
+    private void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+        if (name.length() > 100) {
+            throw new IllegalArgumentException("El nombre no puede exceder 100 caracteres");
+        }
+        this.name = name.trim();
     }
 
     private void setEmail(String email) {
@@ -77,6 +89,11 @@ public class RegisterNewStudentDomain {
     public String getIdNumber() {
         return idNumber;
     }
+
+    public String getName() {
+        return name;
+    }
+
     public String getEmail() {
         return email;
     }
