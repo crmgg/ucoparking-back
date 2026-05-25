@@ -8,6 +8,7 @@ public class ReserveParkingSpaceDTO {
     private Integer spaceNumber;
     private String studentId;
     private String studentName;
+    private String studentEmail;
     private String status;
 
     public ReserveParkingSpaceDTO() {
@@ -50,6 +51,14 @@ public class ReserveParkingSpaceDTO {
 
     public void setStudentName(String studentName) {
         this.studentName = studentName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
     }
 
     public String getStatus() {

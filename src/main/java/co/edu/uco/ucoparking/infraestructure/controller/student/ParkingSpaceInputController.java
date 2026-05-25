@@ -6,6 +6,7 @@ import co.edu.uco.ucoparking.application.usecase.ReleaseParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
+import co.edu.uco.ucoparking.infraestructure.service.NotificationGatewayService;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -17,22 +18,30 @@ public class ParkingSpaceInputController {
     private final ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase;
     private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
     private final ParkingSpaceOutputPort parkingSpaceOutputPort;
+    private final NotificationGatewayService notificationGatewayService;
 
     public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
                                        ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase,
                                        ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
-                                       ParkingSpaceOutputPort parkingSpaceOutputPort) {
+                                       ParkingSpaceOutputPort parkingSpaceOutputPort,
+                                       NotificationGatewayService notificationGatewayService) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
         this.releaseParkingSpaceUseCase = releaseParkingSpaceUseCase;
         this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
         this.parkingSpaceOutputPort = parkingSpaceOutputPort;
+        this.notificationGatewayService = notificationGatewayService;
     }
 
     @PostMapping("/reserve")
     @CrossOrigin(origins = "*")
     public Mono<ParkingSpaceDTO> reserveParkingSpace(@RequestBody ReserveParkingSpaceDTO request) {
         return reserveParkingSpaceInputPort.execute(request)
-                .then(parkingSpaceOutputPort.getParkingSpaceByNumber(request.getSpaceNumber()));
+                .then(parkingSpaceOutputPort.getParkingSpaceByNumber(request.getSpaceNumber()))
+                .flatMap(dto -> notificationGatewayService.sendReservationConfirmed(
+                                request.getStudentEmail(),
+                                request.getStudentName(),
+                                request.getSpaceNumber())
+                        .thenReturn(dto));
     }
 
     @PostMapping("/release")

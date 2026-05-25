@@ -5,8 +5,10 @@ public class NotificationSendResponse {
     private String status;
     private String templateCode;
     private String recipient;
+    private String channel;
     private String subject;
     private String body;
+    private String detail;
 
     public String getStatus() {
         return status;
@@ -32,6 +34,14 @@ public class NotificationSendResponse {
         this.recipient = recipient;
     }
 
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
     public String getSubject() {
         return subject;
     }
@@ -46,5 +56,13 @@ public class NotificationSendResponse {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 }
