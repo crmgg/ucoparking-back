@@ -9,65 +9,82 @@ public class ReserveParkingSpaceDomain {
     private String studentId;
     private String studentName;
     private String status;
+    private String vehiclePlate;
+    private String reservationStartTime;
+    private String reservationEndTime;
+
+    public ReserveParkingSpaceDomain() {
+    }
 
     public ReserveParkingSpaceDomain(Integer spaceNumber, String studentId, String studentName, String status) {
-        super();
-        generateId();
-        setSpaceNumber(spaceNumber);
-        setStudentId(studentId);
-        setStudentName(studentName);
-        setStatus(status);
-    }
-
-    private void setSpaceNumber(Integer spaceNumber) {
-        if (spaceNumber == null || spaceNumber <= 0) {
-            throw new IllegalArgumentException("El número de espacio es obligatorio y debe ser mayor a 0");
-        }
-        this.spaceNumber = spaceNumber;
-    }
-
-    private void setStudentId(String studentId) {
-        if (studentId == null || studentId.isBlank()) {
-            throw new IllegalArgumentException("El ID del estudiante es obligatorio");
-        }
-        this.studentId = studentId;
-    }
-
-    private void setStudentName(String studentName) {
-        if (studentName == null || studentName.isBlank()) {
-            throw new IllegalArgumentException("El nombre del estudiante es obligatorio");
-        }
-        this.studentName = studentName;
-    }
-
-    private void setStatus(String status) {
-        if (status == null || status.isBlank()) {
-            throw new IllegalArgumentException("El estado es obligatorio");
-        }
-        this.status = status;
-    }
-
-    private void generateId() {
         this.id = UUID.randomUUID();
+        this.spaceNumber = spaceNumber;
+        this.studentId = studentId;
+        this.studentName = studentName;
+        this.status = status;
     }
 
     public UUID getId() {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public Integer getSpaceNumber() {
         return spaceNumber;
+    }
+
+    public void setSpaceNumber(Integer spaceNumber) {
+        this.spaceNumber = spaceNumber;
     }
 
     public String getStudentId() {
         return studentId;
     }
 
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
     public String getStudentName() {
         return studentName;
     }
 
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getVehiclePlate() {
+        return vehiclePlate;
+    }
+
+    public void setVehiclePlate(String vehiclePlate) {
+        this.vehiclePlate = vehiclePlate;
+    }
+
+    public String getReservationStartTime() {
+        return reservationStartTime;
+    }
+
+    public void setReservationStartTime(String reservationStartTime) {
+        this.reservationStartTime = reservationStartTime;
+    }
+
+    public String getReservationEndTime() {
+        return reservationEndTime;
+    }
+
+    public void setReservationEndTime(String reservationEndTime) {
+        this.reservationEndTime = reservationEndTime;
     }
 }

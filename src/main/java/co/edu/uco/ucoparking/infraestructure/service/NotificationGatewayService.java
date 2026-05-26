@@ -6,6 +6,7 @@ import co.edu.uco.ucoparking.infraestructure.controller.catalog.dto.Notification
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,17 +23,23 @@ public class NotificationGatewayService {
 
     private final NotificationCatalogService notificationCatalogService;
     private final JavaMailSender mailSender;
+    private final ResendEmailSender resendEmailSender;
 
     @Value("${notification.email.enabled:false}")
     private boolean emailEnabled;
+
+    @Value("${notification.email.provider:smtp}")
+    private String emailProvider;
 
     @Value("${notification.email.from:}")
     private String fromEmail;
 
     public NotificationGatewayService(NotificationCatalogService notificationCatalogService,
-                                      JavaMailSender mailSender) {
+                                      JavaMailSender mailSender,
+                                      ResendEmailSender resendEmailSender) {
         this.notificationCatalogService = notificationCatalogService;
         this.mailSender = mailSender;
+        this.resendEmailSender = resendEmailSender;
     }
 
     public Mono<NotificationSendResponse> send(NotificationSendRequest request) {
@@ -40,7 +47,13 @@ public class NotificationGatewayService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Void> sendReservationConfirmed(String recipient, String studentName, Integer spaceNumber) {
+    public Mono<Void> sendReservationConfirmed(
+            String recipient,
+            String studentName,
+            Integer spaceNumber,
+            String startTime,
+            String endTime,
+            String vehiclePlate) {
         if (recipient == null || recipient.isBlank()) {
             log.warn("Reserva sin studentEmail: no se envia correo de confirmacion");
             return Mono.empty();
@@ -52,7 +65,10 @@ public class NotificationGatewayService {
         request.setChannel("EMAIL");
         request.setVariables(Map.of(
                 "studentName", studentName != null ? studentName : "Estudiante",
-                "spaceNumber", String.valueOf(spaceNumber)
+                "spaceNumber", String.valueOf(spaceNumber),
+                "startTime", startTime != null ? startTime : "—",
+                "endTime", endTime != null ? endTime : "—",
+                "vehiclePlate", vehiclePlate != null ? vehiclePlate : "—"
         ));
 
         return send(request)
@@ -116,7 +132,7 @@ public class NotificationGatewayService {
 
         if (!emailEnabled) {
             response.setStatus("SKIPPED");
-            response.setDetail("Correo desactivado. Activa NOTIFICATION_EMAIL_ENABLED=true y SMTP_*.");
+            response.setDetail("Correo desactivado. Activa NOTIFICATION_EMAIL_ENABLED=true.");
             log.warn("Notification Gateway (email desactivado): to={} template={}", request.getRecipient(), request.getTemplateCode());
             return response;
         }
@@ -127,17 +143,88 @@ public class NotificationGatewayService {
                     "Falta notification.email.from / NOTIFICATION_FROM_EMAIL");
         }
 
+        if (usesResend()) {
+            return sendViaResend(request, response, subject, body);
+        }
+
+        return sendViaSmtp(request, response, subject, body);
+    }
+
+    private boolean usesResend() {
+        return "resend".equalsIgnoreCase(emailProvider);
+    }
+
+    private NotificationSendResponse sendViaResend(
+            NotificationSendRequest request,
+            NotificationSendResponse response,
+            String subject,
+            String body) {
+        if (!resendEmailSender.isConfigured()) {
+            response.setStatus("FAILED");
+            response.setDetail("Falta RESEND_API_KEY. Crea una en https://resend.com/api-keys");
+            return response;
+        }
+
+        try {
+            resendEmailSender.sendEmail(fromEmail, request.getRecipient(), subject, body);
+        } catch (RuntimeException ex) {
+            response.setStatus("FAILED");
+            response.setDetail(ex.getMessage());
+            log.error("Notification Gateway Resend fallo: to={} template={} cause={}",
+                    request.getRecipient(), request.getTemplateCode(), ex.getMessage());
+            return response;
+        }
+
+        response.setStatus("SENT");
+        response.setDetail("Correo enviado via Resend");
+        log.info("Notification Gateway email enviado (Resend): to={} template={}",
+                request.getRecipient(), request.getTemplateCode());
+        return response;
+    }
+
+    private NotificationSendResponse sendViaSmtp(
+            NotificationSendRequest request,
+            NotificationSendResponse response,
+            String subject,
+            String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(request.getRecipient());
         message.setSubject(subject);
         message.setText(body);
-        mailSender.send(message);
+
+        try {
+            mailSender.send(message);
+        } catch (MailException ex) {
+            response.setStatus("FAILED");
+            response.setDetail(buildMailErrorDetail(ex));
+            log.error("Notification Gateway email fallo: to={} template={} cause={}",
+                    request.getRecipient(), request.getTemplateCode(), ex.getMessage());
+            return response;
+        }
 
         response.setStatus("SENT");
         response.setDetail("Correo enviado via SMTP");
         log.info("Notification Gateway email enviado: to={} template={}", request.getRecipient(), request.getTemplateCode());
         return response;
+    }
+
+    private String buildMailErrorDetail(MailException ex) {
+        String message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+        Throwable cause = ex.getCause();
+        while (cause != null) {
+            if (cause.getMessage() != null) {
+                message = message + " " + cause.getMessage();
+            }
+            cause = cause.getCause();
+        }
+        if (message.contains("535")
+                || message.contains("Authentication")
+                || message.contains("BadCredentials")) {
+            return "SMTP rechazo usuario/contrasena. Usa Resend (NOTIFICATION_EMAIL_PROVIDER=resend) "
+                    + "o renueva SMTP_PASSWORD en infisical-secrets.env.";
+        }
+        return "Error SMTP: " + message.trim();
     }
 
     private void validateRequest(NotificationSendRequest request) {

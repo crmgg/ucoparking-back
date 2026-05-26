@@ -19,6 +19,7 @@ public class ReserveParkingSpaceValidator implements Validator {
         ParkingSpaceNumberIsWithinRangeRule.executeRule(dto.getSpaceNumber());
         IsStringPresentRule.executeRule(dto.getStudentId(), "estudiante", true);
         IsStringPresentRule.executeRule(dto.getStudentName(), "nombre del estudiante", true);
+        IsStringPresentRule.executeRule(dto.getVehiclePlate(), "placa del vehículo", true);
         StudentNameLengthValueIsValidRule.executeRule(dto.getStudentName());
     }
 }

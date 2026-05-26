@@ -1,5 +1,6 @@
 package co.edu.uco.ucoparking.infraestructure.controller.student;
 
+import co.edu.uco.ucoparking.application.usecase.AdminReleaseParkingSpaceUseCase;
 import co.edu.uco.ucoparking.application.usecase.OccupyParkingSpaceUseCase;
 import co.edu.uco.ucoparking.application.usecase.ReleaseParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.ReserveParkingSpaceInputPort;
@@ -23,17 +24,20 @@ public class ParkingSpaceInputController {
     private final ReserveParkingSpaceInputPort reserveParkingSpaceInputPort;
     private final NotificationGatewayService notificationGatewayService;
     private final StudentNotificationEmailResolver studentNotificationEmailResolver;
+    private final AdminReleaseParkingSpaceUseCase adminReleaseParkingSpaceUseCase;
 
     public ParkingSpaceInputController(OccupyParkingSpaceUseCase occupyParkingSpaceUseCase,
                                        ReleaseParkingSpaceUseCase releaseParkingSpaceUseCase,
                                        ReserveParkingSpaceInputPort reserveParkingSpaceInputPort,
                                        NotificationGatewayService notificationGatewayService,
-                                       StudentNotificationEmailResolver studentNotificationEmailResolver) {
+                                       StudentNotificationEmailResolver studentNotificationEmailResolver,
+                                       AdminReleaseParkingSpaceUseCase adminReleaseParkingSpaceUseCase) {
         this.occupyParkingSpaceUseCase = occupyParkingSpaceUseCase;
         this.releaseParkingSpaceUseCase = releaseParkingSpaceUseCase;
         this.reserveParkingSpaceInputPort = reserveParkingSpaceInputPort;
         this.notificationGatewayService = notificationGatewayService;
         this.studentNotificationEmailResolver = studentNotificationEmailResolver;
+        this.adminReleaseParkingSpaceUseCase = adminReleaseParkingSpaceUseCase;
     }
 
     @PostMapping("/reserve")
@@ -52,9 +56,19 @@ public class ParkingSpaceInputController {
                     return notificationGatewayService.sendReservationConfirmed(
                                     recipient,
                                     request.getStudentName(),
-                                    request.getSpaceNumber())
+                                    request.getSpaceNumber(),
+                                    request.getReservationStartTime(),
+                                    request.getReservationEndTime(),
+                                    request.getVehiclePlate())
                             .thenReturn(dto);
                 });
+    }
+
+    @PostMapping("/admin/release/{spaceNumber}")
+    @CrossOrigin(origins = "*")
+    public Mono<ParkingSpaceDTO> adminReleaseParkingSpace(@PathVariable Integer spaceNumber) {
+        log.info("Liberacion admin espacio {}", spaceNumber);
+        return adminReleaseParkingSpaceUseCase.execute(spaceNumber);
     }
 
     @PostMapping("/release")

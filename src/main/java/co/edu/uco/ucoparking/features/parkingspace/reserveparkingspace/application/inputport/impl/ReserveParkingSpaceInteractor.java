@@ -30,6 +30,9 @@ public class ReserveParkingSpaceInteractor implements ReserveParkingSpaceInputPo
         if (data.getStatus() == null || data.getStatus().isBlank()) {
             data.setStatus("OCCUPIED");
         }
+        if (data.getVehiclePlate() != null) {
+            data.setVehiclePlate(data.getVehiclePlate().trim().toUpperCase());
+        }
 
         return Mono.fromRunnable(() -> validator.validate(data))
                 .then(Mono.defer(() -> {

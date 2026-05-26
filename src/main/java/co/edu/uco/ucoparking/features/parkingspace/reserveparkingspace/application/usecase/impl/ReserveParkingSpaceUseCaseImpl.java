@@ -1,15 +1,16 @@
 package co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.impl;
 
 import co.edu.uco.ucoparking.crosscutting.exception.UcoParkingException;
+import co.edu.uco.ucoparking.crosscutting.helper.ReservationDateHelper;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.ReserveParkingSpaceUseCase;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.domain.ReserveParkingSpaceDomain;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceIsAvailableRule;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.StudentDoesNotHaveActiveParkingSpaceRule;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.VehiclePlateNotAlreadyReservedTodayRule;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
 import co.edu.uco.ucoparking.infraestructure.persistence.adapter.ParkingSpaceAdapter;
 import co.edu.uco.ucoparking.infraestructure.persistence.entity.ParkingSpaceEntity;
 import co.edu.uco.ucoparking.infraestructure.persistence.repository.r2dbc.ParkingSpaceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +22,6 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
     private final ParkingSpaceRepository repository;
     private final ParkingSpaceAdapter parkingSpaceAdapter;
 
-    @Autowired
     public ReserveParkingSpaceUseCaseImpl(
             ParkingSpaceRepository repository,
             ParkingSpaceAdapter parkingSpaceAdapter) {
@@ -31,15 +31,38 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
 
     @Override
     public Mono<ParkingSpaceDTO> execute(ReserveParkingSpaceDomain data) {
+        String reservationDate = ReservationDateHelper.today();
+        String normalizedPlate = ReservationDateHelper.normalizePlate(data.getVehiclePlate());
+
         return repository.findBySpaceNumber(data.getSpaceNumber())
                 .switchIfEmpty(Mono.error(UcoParkingException.create(
                         "El parqueadero " + data.getSpaceNumber() + " no existe.",
                         "No se encontró parqueadero con número: " + data.getSpaceNumber())))
-                .flatMap(space -> validateAndReserve(space, data))
+                .flatMap(space -> validatePlateAvailableToday(normalizedPlate, reservationDate)
+                        .then(validateAndReserve(space, data, normalizedPlate, reservationDate)))
                 .map(this::mapEntityToDTO);
     }
 
-    private Mono<ParkingSpaceEntity> validateAndReserve(ParkingSpaceEntity space, ReserveParkingSpaceDomain data) {
+    private Mono<Void> validatePlateAvailableToday(String normalizedPlate, String reservationDate) {
+        if (normalizedPlate == null || normalizedPlate.isBlank()) {
+            return Mono.empty();
+        }
+
+        return repository
+                .findByVehiclePlateIgnoreCaseAndStatusAndReservationDate(
+                        normalizedPlate, OCCUPIED_STATUS, reservationDate)
+                .hasElement()
+                .flatMap(alreadyReserved -> {
+                    VehiclePlateNotAlreadyReservedTodayRule.executeRule(alreadyReserved);
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<ParkingSpaceEntity> validateAndReserve(
+            ParkingSpaceEntity space,
+            ReserveParkingSpaceDomain data,
+            String normalizedPlate,
+            String reservationDate) {
         ParkingSpaceIsAvailableRule.executeRule(space.getStatus(), space.getSpaceNumber());
 
         return repository.findByOccupiedByStudentIdAndStatus(data.getStudentId(), OCCUPIED_STATUS)
@@ -50,6 +73,10 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
                     space.setStatus(OCCUPIED_STATUS);
                     space.setOccupiedByStudentId(data.getStudentId());
                     space.setOccupiedByStudentName(data.getStudentName());
+                    space.setVehiclePlate(normalizedPlate);
+                    space.setReservationStartTime(data.getReservationStartTime());
+                    space.setReservationEndTime(data.getReservationEndTime());
+                    space.setReservationDate(reservationDate);
                     space.setUpdatedAt(System.currentTimeMillis());
 
                     return repository.save(space)
@@ -65,6 +92,10 @@ public class ReserveParkingSpaceUseCaseImpl implements ReserveParkingSpaceUseCas
                 entity.getStatus(),
                 entity.getOccupiedByStudentId(),
                 entity.getOccupiedByStudentName(),
+                entity.getVehiclePlate(),
+                entity.getReservationStartTime(),
+                entity.getReservationEndTime(),
+                entity.getReservationDate(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

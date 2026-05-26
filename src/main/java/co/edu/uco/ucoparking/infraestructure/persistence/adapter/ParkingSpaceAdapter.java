@@ -69,6 +69,10 @@ public class ParkingSpaceAdapter implements ParkingSpaceOutputPort {
                 entity.getStatus(),
                 entity.getOccupiedByStudentId(),
                 entity.getOccupiedByStudentName(),
+                entity.getVehiclePlate(),
+                entity.getReservationStartTime(),
+                entity.getReservationEndTime(),
+                entity.getReservationDate(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

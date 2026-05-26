@@ -30,6 +30,22 @@ public class ParkingSpaceEntity {
     @org.springframework.data.relational.core.mapping.Column("occupied_by_student_name")
     private String occupiedByStudentName;
 
+    @jakarta.persistence.Column(name = "vehicle_plate")
+    @org.springframework.data.relational.core.mapping.Column("vehicle_plate")
+    private String vehiclePlate;
+
+    @jakarta.persistence.Column(name = "reservation_start_time")
+    @org.springframework.data.relational.core.mapping.Column("reservation_start_time")
+    private String reservationStartTime;
+
+    @jakarta.persistence.Column(name = "reservation_end_time")
+    @org.springframework.data.relational.core.mapping.Column("reservation_end_time")
+    private String reservationEndTime;
+
+    @jakarta.persistence.Column(name = "reservation_date")
+    @org.springframework.data.relational.core.mapping.Column("reservation_date")
+    private String reservationDate;
+
     @jakarta.persistence.Column(name = "created_at", nullable = false)
     @org.springframework.data.relational.core.mapping.Column("created_at")
     private Long createdAt;
@@ -82,6 +98,38 @@ public class ParkingSpaceEntity {
 
     public void setOccupiedByStudentName(String occupiedByStudentName) {
         this.occupiedByStudentName = occupiedByStudentName;
+    }
+
+    public String getVehiclePlate() {
+        return vehiclePlate;
+    }
+
+    public void setVehiclePlate(String vehiclePlate) {
+        this.vehiclePlate = vehiclePlate;
+    }
+
+    public String getReservationStartTime() {
+        return reservationStartTime;
+    }
+
+    public void setReservationStartTime(String reservationStartTime) {
+        this.reservationStartTime = reservationStartTime;
+    }
+
+    public String getReservationEndTime() {
+        return reservationEndTime;
+    }
+
+    public void setReservationEndTime(String reservationEndTime) {
+        this.reservationEndTime = reservationEndTime;
+    }
+
+    public String getReservationDate() {
+        return reservationDate;
+    }
+
+    public void setReservationDate(String reservationDate) {
+        this.reservationDate = reservationDate;
     }
 
     public Long getCreatedAt() {

@@ -10,6 +10,9 @@ public class ReserveParkingSpaceDTO {
     private String studentName;
     private String studentEmail;
     private String status;
+    private String vehiclePlate;
+    private String reservationStartTime;
+    private String reservationEndTime;
 
     public ReserveParkingSpaceDTO() {
     }
@@ -67,5 +70,29 @@ public class ReserveParkingSpaceDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getVehiclePlate() {
+        return vehiclePlate;
+    }
+
+    public void setVehiclePlate(String vehiclePlate) {
+        this.vehiclePlate = vehiclePlate;
+    }
+
+    public String getReservationStartTime() {
+        return reservationStartTime;
+    }
+
+    public void setReservationStartTime(String reservationStartTime) {
+        this.reservationStartTime = reservationStartTime;
+    }
+
+    public String getReservationEndTime() {
+        return reservationEndTime;
+    }
+
+    public void setReservationEndTime(String reservationEndTime) {
+        this.reservationEndTime = reservationEndTime;
     }
 }
