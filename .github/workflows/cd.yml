@@ -1,0 +1,25 @@
+name: CD
+
+on:
+  push:
+    branches: [main, master, feature/notification-gateway]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_VM_HOST }}
+          username: ${{ secrets.DEPLOY_VM_USER }}
+          key: ${{ secrets.DEPLOY_VM_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            export GITHUB_USER=crmgg
+            export BRANCH=feature/notification-gateway
+            export TARGET=/opt/uco-parking
+            bash "$TARGET/deploy/scripts/cd-remote.sh"

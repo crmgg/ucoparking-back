@@ -1,0 +1,44 @@
+_format_version: "3.0"
+
+services:
+  - name: uco-parking-backend
+    url: http://backend:8080
+
+routes:
+  - name: uco-parking-route
+    service: uco-parking-backend
+    paths:
+      - /uco-parking
+    strip_path: false
+    protocols:
+      - http
+
+plugins:
+  - name: cors
+    service: uco-parking-backend
+    config:
+      origins:
+        - __FRONTEND_ORIGIN__
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Authorization
+        - Content-Type
+        - Accept
+      exposed_headers:
+        - Authorization
+      credentials: false
+      max_age: 3600
+
+  - name: rate-limiting
+    service: uco-parking-backend
+    config:
+      minute: 120
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
