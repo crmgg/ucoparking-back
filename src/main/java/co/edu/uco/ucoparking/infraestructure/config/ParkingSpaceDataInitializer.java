@@ -10,6 +10,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import java.util.UUID;
+
 @Component
 @DependsOn("entityManagerFactory")
 public class ParkingSpaceDataInitializer {
@@ -40,6 +42,7 @@ public class ParkingSpaceDataInitializer {
             Long inserted = Flux.range(1, TOTAL_SPACES)
                     .concatMap(spaceNumber -> {
                         var entity = new ParkingSpaceEntity();
+                        entity.setId(UUID.randomUUID().toString());
                         entity.setSpaceNumber(spaceNumber);
                         entity.setStatus("AVAILABLE");
                         return repository.save(entity)
@@ -56,7 +59,7 @@ public class ParkingSpaceDataInitializer {
                         "[SEED] Expected at least " + TOTAL_SPACES + " parking spaces but found " + total);
             }
         } catch (Exception exception) {
-            log.error("[SEED] Seed failed (la app sigue arriba; revisa SQL en localhost:14333)", exception);
+            log.error("[SEED] Seed failed (la app sigue arriba): {}", exception.getMessage(), exception);
         }
     }
 }
