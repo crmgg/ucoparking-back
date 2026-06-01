@@ -6,6 +6,7 @@ set -euo pipefail
 GITHUB_USER="${GITHUB_USER:?Define GITHUB_USER (ej: crmgg)}"
 TARGET="${TARGET:-/opt/uco-parking}"
 BRANCH="${BRANCH:-feature/notification-gateway}"
+FRONT_BRANCH="${FRONT_BRANCH:-$BRANCH}"
 CONFIG_SERVER_BRANCH="${CONFIG_SERVER_BRANCH:-master}"
 
 mkdir -p "$TARGET"
@@ -24,7 +25,7 @@ clone_or_pull() {
 }
 
 clone_or_pull uco-parking ucoparking-back "$BRANCH"
-clone_or_pull UcoParkingFront ucoParking-front "$BRANCH"
+clone_or_pull UcoParkingFront ucoParking-front "$FRONT_BRANCH"
 clone_or_pull uco-parking-config-server uco-parking-config-server "$CONFIG_SERVER_BRANCH"
 
 if [[ ! -d uco-parking/deploy ]]; then
@@ -32,8 +33,14 @@ if [[ ! -d uco-parking/deploy ]]; then
   exit 1
 fi
 
+# Guardar este script antes de copiar deploy/ (bash sigue leyendo el archivo en disco).
+SELF_BACKUP="$(mktemp)"
+cp "$0" "$SELF_BACKUP"
+
 mkdir -p deploy
 cp -r uco-parking/deploy/. deploy/
+cp "$SELF_BACKUP" deploy/scripts/clone-stack.sh
+rm -f "$SELF_BACKUP"
 chmod +x deploy/deploy.sh deploy/scripts/*.sh 2>/dev/null || true
 
 echo "Stack listo en $TARGET (rama $BRANCH)"
