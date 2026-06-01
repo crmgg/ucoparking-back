@@ -21,17 +21,32 @@ fi
 mkdir -p kong
 sed "s|__FRONTEND_ORIGIN__|${FRONTEND_PUBLIC_URL}|g" kong/kong.prod.yml.template > kong/kong.prod.yml
 
+COMPOSE=(docker compose -f docker-compose.prod.yml --env-file .env)
+
+cleanup_uco_containers() {
+  echo "Limpiando contenedores uco (incluye prefijos viejos de compose)..."
+  "${COMPOSE[@]}" down --remove-orphans 2>/dev/null || true
+
+  # uco-config-server y 0f2d88ac2f66_uco-config-server, etc.
+  mapfile -t names < <(docker ps -a --format '{{.Names}}' | grep -E '(^|_)uco-' || true)
+  for name in "${names[@]:-}"; do
+    [[ -n "$name" ]] && docker rm -f "$name" 2>/dev/null || true
+  done
+
+  mapfile -t legacy < <(docker ps -a --format '{{.Names}}' | grep -E 'config-server|uco-parking-prod' || true)
+  for name in "${legacy[@]:-}"; do
+    [[ -n "$name" ]] && docker rm -f "$name" 2>/dev/null || true
+  done
+}
+
 echo "Desplegando stack UCO Parking..."
+cleanup_uco_containers
 
-# Evita "No such container: <hash>_uco-config-server" cuando compose tiene estado viejo
-docker compose -f docker-compose.prod.yml --env-file .env down --remove-orphans 2>/dev/null || true
-docker rm -f uco-config-server uco-backend uco-frontend uco-kong uco-waf 2>/dev/null || true
-
-docker compose -f docker-compose.prod.yml --env-file .env up -d --build --remove-orphans
+"${COMPOSE[@]}" up -d --build --remove-orphans --force-recreate
 
 echo ""
 echo "Estado de contenedores:"
-docker compose -f docker-compose.prod.yml ps
+"${COMPOSE[@]}" ps
 
 echo ""
 echo "Front:  ${FRONTEND_PUBLIC_URL}"

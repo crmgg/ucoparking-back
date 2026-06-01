@@ -50,4 +50,6 @@ jobs:
             chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
 
             cd "$TARGET/deploy"
+            # Limpieza previa (contenedores con prefijo hash de compose viejo)
+            sudo docker ps -a --format '{{.Names}}' | grep -E '(^|_)uco-' | xargs -r sudo docker rm -f || true
             sudo -n bash deploy.sh
