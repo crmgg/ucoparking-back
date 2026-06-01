@@ -8,28 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Verify deploy secrets
-        run: |
-          missing=0
-          if [ -z "${{ secrets.DEPLOY_VM_HOST }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_HOST"
-            missing=1
-          fi
-          if [ -z "${{ secrets.DEPLOY_VM_USER }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_USER"
-            missing=1
-          fi
-          if [ -z "${{ secrets.DEPLOY_VM_SSH_KEY }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_SSH_KEY"
-            missing=1
-          fi
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
-          echo "Secrets configurados."
-
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -39,61 +18,10 @@ jobs:
           port: 22
           timeout: 60s
           command_timeout: 45m
-          script_stop: true
           script: |
-            set -euo pipefail
-            export GITHUB_USER=crmgg
-            export BRANCH=feature/notification-gateway
-            export FRONT_BRANCH=feature/notification-gateway
-            export CONFIG_SERVER_BRANCH=master
-            export TARGET=/opt/uco-parking
-
-            echo "=== CD UCO Parking ==="
-            echo "Host: $(hostname) | Target: $TARGET"
-
-            if [[ ! -f "$TARGET/deploy/.env" ]]; then
-              echo "ERROR: falta $TARGET/deploy/.env en la VM"
-              exit 1
-            fi
-
-            mkdir -p "$TARGET"
-
-            pull_or_clone() {
-              local dir="$1"
-              local repo="$2"
-              local branch="$3"
-              if [[ -d "$TARGET/$dir/.git" ]]; then
-                git -C "$TARGET/$dir" fetch origin
-                git -C "$TARGET/$dir" reset --hard "origin/$branch"
-              else
-                git clone --branch "$branch" --depth 1 \
-                  "https://github.com/${GITHUB_USER}/${repo}.git" "$TARGET/$dir"
-              fi
-            }
-
-            pull_or_clone uco-parking ucoparking-back "$BRANCH"
-            pull_or_clone UcoParkingFront ucoParking-front "$FRONT_BRANCH"
-            pull_or_clone uco-parking-config-server uco-parking-config-server "$CONFIG_SERVER_BRANCH"
-
-            ENV_BACKUP="$(mktemp)"
-            cp "$TARGET/deploy/.env" "$ENV_BACKUP"
-            mkdir -p "$TARGET/deploy"
-            cp -r "$TARGET/uco-parking/deploy/." "$TARGET/deploy/"
-            cp "$ENV_BACKUP" "$TARGET/deploy/.env"
-            rm -f "$ENV_BACKUP"
-            chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
-
+            set -e
+            TARGET=/opt/uco-parking
             cd "$TARGET/deploy"
-            if sudo -n docker ps >/dev/null 2>&1; then
-              echo "=== Deploy (sudo docker) ==="
-              sudo -n -E bash deploy.sh
-            elif docker ps >/dev/null 2>&1; then
-              echo "=== Deploy (docker) ==="
-              bash deploy.sh
-            else
-              echo "ERROR: falta permiso docker para CD."
-              echo "En la VM ejecuta:"
-              echo "  echo 'claryrivillaas ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/clary-cd"
-              echo "  sudo chmod 440 /etc/sudoers.d/clary-cd"
-              exit 1
-            fi
+            test -f .env
+            sudo -n docker ps
+            sudo -n bash deploy.sh
