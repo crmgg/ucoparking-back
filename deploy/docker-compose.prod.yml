@@ -53,6 +53,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_CLOUD_CONFIG_IMPORT_CHECK_ENABLED: "false"
       AUTH0_DOMAIN: ${AUTH0_DOMAIN}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH0_SECURITY_ENABLED: ${AUTH0_SECURITY_ENABLED:-false}

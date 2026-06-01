@@ -14,15 +14,15 @@ jobs:
         run: |
           missing=0
           if [ -z "${{ secrets.DEPLOY_VM_HOST }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_HOST (Settings → Secrets and variables → Actions)"
+            echo "::error::Falta secret DEPLOY_VM_HOST"
             missing=1
           fi
           if [ -z "${{ secrets.DEPLOY_VM_USER }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_USER (usuario SSH de la VM, ej. ubuntu o tu usuario GCP)"
+            echo "::error::Falta secret DEPLOY_VM_USER"
             missing=1
           fi
           if [ -z "${{ secrets.DEPLOY_VM_SSH_KEY }}" ]; then
-            echo "::error::Falta secret DEPLOY_VM_SSH_KEY (clave privada .pem completa, con -----BEGIN/END-----)"
+            echo "::error::Falta secret DEPLOY_VM_SSH_KEY"
             missing=1
           fi
           if [ "$missing" -ne 0 ]; then
@@ -49,33 +49,39 @@ jobs:
             export TARGET=/opt/uco-parking
 
             echo "=== CD UCO Parking ==="
-            echo "Host: $(hostname) | Target: $TARGET | Branch: $BRANCH"
+            echo "Host: $(hostname) | Target: $TARGET"
+
+            if [[ ! -f "$TARGET/deploy/.env" ]]; then
+              echo "ERROR: falta $TARGET/deploy/.env en la VM"
+              exit 1
+            fi
 
             mkdir -p "$TARGET"
 
-            if [[ ! -f "$TARGET/deploy/scripts/clone-stack.sh" ]]; then
-              echo "=== Bootstrap (primera vez en esta VM) ==="
-              BOOT="$TARGET/_bootstrap-$$"
-              git clone --branch "$BRANCH" --depth 1 \
-                "https://github.com/${GITHUB_USER}/ucoparking-back.git" "$BOOT"
-              mkdir -p "$TARGET/deploy"
-              cp -r "$BOOT/deploy/." "$TARGET/deploy/"
-              chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
-              rm -rf "$BOOT"
-              echo "Bootstrap OK."
-            fi
+            pull_or_clone() {
+              local dir="$1"
+              local repo="$2"
+              local branch="$3"
+              if [[ -d "$TARGET/$dir/.git" ]]; then
+                git -C "$TARGET/$dir" fetch origin
+                git -C "$TARGET/$dir" reset --hard "origin/$branch"
+              else
+                git clone --branch "$branch" --depth 1 \
+                  "https://github.com/${GITHUB_USER}/${repo}.git" "$TARGET/$dir"
+              fi
+            }
 
-            if [[ ! -f "$TARGET/deploy/scripts/cd-remote.sh" ]]; then
-              echo "ERROR: no existe $TARGET/deploy/scripts/cd-remote.sh"
-              exit 1
-            fi
+            pull_or_clone uco-parking ucoparking-back "$BRANCH"
+            pull_or_clone UcoParkingFront ucoParking-front "$FRONT_BRANCH"
+            pull_or_clone uco-parking-config-server uco-parking-config-server "$CONFIG_SERVER_BRANCH"
 
-            if [[ ! -f "$TARGET/deploy/.env" ]]; then
-              echo "ERROR: falta $TARGET/deploy/.env"
-              echo "En la VM ejecuta una vez:"
-              echo "  cd $TARGET/deploy && cp .env.example .env && nano .env"
-              echo "Luego vuelve a lanzar el workflow CD."
-              exit 1
-            fi
+            ENV_BACKUP="$(mktemp)"
+            cp "$TARGET/deploy/.env" "$ENV_BACKUP"
+            mkdir -p "$TARGET/deploy"
+            cp -r "$TARGET/uco-parking/deploy/." "$TARGET/deploy/"
+            cp "$ENV_BACKUP" "$TARGET/deploy/.env"
+            rm -f "$ENV_BACKUP"
+            chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
 
-            bash "$TARGET/deploy/scripts/cd-remote.sh"
+            cd "$TARGET/deploy"
+            bash deploy.sh
