@@ -45,6 +45,8 @@ services:
       dockerfile: Dockerfile
     container_name: uco-backend
     environment:
+      TZ: America/Bogota
+      JAVA_TOOL_OPTIONS: -Duser.timezone=America/Bogota
       DB_HOST: sqlserver
       DB_PORT: "1433"
       DB_NAME: ucoparking

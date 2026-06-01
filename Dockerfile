@@ -8,6 +8,8 @@ RUN ./mvnw -B package -DskipTests -Djava.version=21
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
+ENV TZ=America/Bogota
+ENV JAVA_TOOL_OPTIONS=-Duser.timezone=America/Bogota
 ENV SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
 COPY --from=build /app/target/uco-parking-*.jar app.jar
 EXPOSE 8080

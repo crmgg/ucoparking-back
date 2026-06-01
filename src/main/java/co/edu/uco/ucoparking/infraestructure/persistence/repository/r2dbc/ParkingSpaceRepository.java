@@ -10,8 +10,11 @@ import reactor.core.publisher.Mono;
 public interface ParkingSpaceRepository extends ReactiveCrudRepository<ParkingSpaceEntity, String> {
     Mono<ParkingSpaceEntity> findBySpaceNumber(Integer spaceNumber);
     Mono<ParkingSpaceEntity> findByOccupiedByStudentIdAndStatus(String occupiedByStudentId, String status);
+    Mono<ParkingSpaceEntity> findByOccupiedByStudentIdAndStatusAndReservationDate(
+            String occupiedByStudentId, String status, String reservationDate);
     Mono<ParkingSpaceEntity> findByVehiclePlateIgnoreCaseAndStatusAndReservationDate(
             String vehiclePlate, String status, String reservationDate);
+    Flux<ParkingSpaceEntity> findByStatusAndReservationDateNot(String status, String reservationDate);
     Flux<ParkingSpaceEntity> findByStatus(String status);
     Flux<ParkingSpaceEntity> findAllByOrderBySpaceNumber();
 }

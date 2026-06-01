@@ -1,6 +1,7 @@
 package co.edu.uco.ucoparking.application.usecase;
 
 import co.edu.uco.ucoparking.crosscutting.exception.UcoParkingException;
+import co.edu.uco.ucoparking.crosscutting.helper.ReservationDateHelper;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceIsAvailableRule;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.StudentDoesNotHaveActiveParkingSpaceRule;
 import co.edu.uco.ucoparking.infraestructure.controller.dto.ParkingSpaceDTO;
@@ -36,7 +37,8 @@ public class OccupyParkingSpaceUseCase {
     private Mono<ParkingSpaceEntity> validateAndOccupy(ParkingSpaceEntity space, String studentId, String studentName) {
         ParkingSpaceIsAvailableRule.executeRule(space.getStatus(), space.getSpaceNumber());
 
-        return parkingSpaceRepository.findByOccupiedByStudentIdAndStatus(studentId, OCCUPIED_STATUS)
+        return parkingSpaceRepository.findByOccupiedByStudentIdAndStatusAndReservationDate(
+                        studentId, OCCUPIED_STATUS, ReservationDateHelper.today())
                 .hasElement()
                 .flatMap(hasActiveSpace -> {
                     StudentDoesNotHaveActiveParkingSpaceRule.executeRule(hasActiveSpace);
@@ -44,6 +46,7 @@ public class OccupyParkingSpaceUseCase {
                     space.setStatus(OCCUPIED_STATUS);
                     space.setOccupiedByStudentId(studentId);
                     space.setOccupiedByStudentName(studentName);
+                    space.setReservationDate(ReservationDateHelper.today());
                     space.setUpdatedAt(System.currentTimeMillis());
 
                     return parkingSpaceRepository.save(space)
