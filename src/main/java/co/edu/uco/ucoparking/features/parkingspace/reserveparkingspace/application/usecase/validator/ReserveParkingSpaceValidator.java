@@ -5,6 +5,7 @@ import co.edu.uco.ucoparking.application.usecase.validator.Validator;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.inputport.dto.ReserveParkingSpaceDTO;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceNumberIsValidRule;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.ParkingSpaceNumberIsWithinRangeRule;
+import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.VehiclePlateFormatIsValidRule;
 import co.edu.uco.ucoparking.features.parkingspace.reserveparkingspace.application.usecase.rule.StudentNameLengthValueIsValidRule;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ public class ReserveParkingSpaceValidator implements Validator {
         IsStringPresentRule.executeRule(dto.getStudentId(), "estudiante", true);
         IsStringPresentRule.executeRule(dto.getStudentName(), "nombre del estudiante", true);
         IsStringPresentRule.executeRule(dto.getVehiclePlate(), "placa del vehículo", true);
+        VehiclePlateFormatIsValidRule.executeRule(dto.getVehiclePlate());
         StudentNameLengthValueIsValidRule.executeRule(dto.getStudentName());
     }
 }

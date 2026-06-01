@@ -2,10 +2,12 @@ package co.edu.uco.ucoparking.crosscutting.helper;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.regex.Pattern;
 
 public final class ReservationDateHelper {
 
     private static final ZoneId ZONE = ZoneId.of("America/Bogota");
+    private static final Pattern PLATE_PATTERN = Pattern.compile("^[A-Z]{3}([0-9]{3}|[0-9]{2}[A-Z])$");
 
     private ReservationDateHelper() {
     }
@@ -26,5 +28,10 @@ public final class ReservationDateHelper {
             return null;
         }
         return plate.trim().toUpperCase();
+    }
+
+    /** Carro: ABC123. Moto: ABC12D. */
+    public static boolean isValidPlateFormat(String normalizedPlate) {
+        return normalizedPlate != null && PLATE_PATTERN.matcher(normalizedPlate).matches();
     }
 }
