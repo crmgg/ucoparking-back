@@ -83,27 +83,17 @@ jobs:
             rm -f "$ENV_BACKUP"
             chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
 
-            echo "=== Diagnostico ==="
-            id
-            groups
-            ls -la "$TARGET/deploy/.env"
-
-            run_deploy() {
-              cd "$TARGET/deploy"
-              bash deploy.sh
-            }
-
             cd "$TARGET/deploy"
-            if docker info >/dev/null 2>&1; then
-              echo "=== Deploy con docker (sin sudo) ==="
-              run_deploy
-            elif sudo -n docker info >/dev/null 2>&1; then
-              echo "=== Deploy con sudo docker ==="
-              sudo -n -E bash -c "cd '$TARGET/deploy' && bash deploy.sh"
+            if sudo -n docker ps >/dev/null 2>&1; then
+              echo "=== Deploy (sudo docker) ==="
+              sudo -n -E bash deploy.sh
+            elif docker ps >/dev/null 2>&1; then
+              echo "=== Deploy (docker) ==="
+              bash deploy.sh
             else
-              echo "ERROR: GitHub Actions no puede usar docker en esta VM."
-              echo "En la VM (SSH de Google Cloud) ejecuta UNA VEZ:"
-              echo "  echo 'claryrivillaas ALL=(ALL) NOPASSWD: /usr/bin/docker, /usr/bin/docker-compose, /usr/bin/bash' | sudo tee /etc/sudoers.d/clary-cd"
+              echo "ERROR: falta permiso docker para CD."
+              echo "En la VM ejecuta:"
+              echo "  echo 'claryrivillaas ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/clary-cd"
               echo "  sudo chmod 440 /etc/sudoers.d/clary-cd"
               exit 1
             fi
