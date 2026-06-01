@@ -21,7 +21,33 @@ jobs:
           script: |
             set -e
             TARGET=/opt/uco-parking
+            GITHUB_USER=crmgg
+            BRANCH=feature/notification-gateway
+            FRONT_BRANCH=feature/notification-gateway
+            CONFIG_SERVER_BRANCH=master
+
+            pull_or_clone() {
+              local dir="$1" repo="$2" branch="$3"
+              if [[ -d "$TARGET/$dir/.git" ]]; then
+                git -C "$TARGET/$dir" fetch origin
+                git -C "$TARGET/$dir" reset --hard "origin/$branch"
+              else
+                git clone --branch "$branch" --depth 1 \
+                  "https://github.com/${GITHUB_USER}/${repo}.git" "$TARGET/$dir"
+              fi
+            }
+
+            test -f "$TARGET/deploy/.env"
+            pull_or_clone uco-parking ucoparking-back "$BRANCH"
+            pull_or_clone UcoParkingFront ucoParking-front "$FRONT_BRANCH"
+            pull_or_clone uco-parking-config-server uco-parking-config-server "$CONFIG_SERVER_BRANCH"
+
+            ENV_BACKUP="$(mktemp)"
+            cp "$TARGET/deploy/.env" "$ENV_BACKUP"
+            cp -r "$TARGET/uco-parking/deploy/." "$TARGET/deploy/"
+            cp "$ENV_BACKUP" "$TARGET/deploy/.env"
+            rm -f "$ENV_BACKUP"
+            chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
+
             cd "$TARGET/deploy"
-            test -f .env
-            sudo -n docker ps
             sudo -n bash deploy.sh

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import org.springframework.context.annotation.Configuration;
@@ -191,8 +192,12 @@ public class Auth0Config {
 
 
     @Bean
-
+    @ConditionalOnProperty(name = "auth0.security.enabled", havingValue = "true")
     public ReactiveJwtDecoder reactiveJwtDecoder() {
+        if (jwkSetUri == null || jwkSetUri.isBlank()) {
+            throw new IllegalStateException(
+                    "auth0.security.enabled=true pero falta spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
+        }
 
         String normalizedIssuer = issuerUri.endsWith("/") ? issuerUri : issuerUri + "/";
 
