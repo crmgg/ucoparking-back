@@ -8,18 +8,73 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
+      - name: Verify deploy secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.DEPLOY_VM_HOST }}" ]; then
+            echo "::error::Falta secret DEPLOY_VM_HOST (Settings → Secrets and variables → Actions)"
+            missing=1
+          fi
+          if [ -z "${{ secrets.DEPLOY_VM_USER }}" ]; then
+            echo "::error::Falta secret DEPLOY_VM_USER (usuario SSH de la VM, ej. ubuntu o tu usuario GCP)"
+            missing=1
+          fi
+          if [ -z "${{ secrets.DEPLOY_VM_SSH_KEY }}" ]; then
+            echo "::error::Falta secret DEPLOY_VM_SSH_KEY (clave privada .pem completa, con -----BEGIN/END-----)"
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "Secrets configurados."
+
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_VM_HOST }}
           username: ${{ secrets.DEPLOY_VM_USER }}
           key: ${{ secrets.DEPLOY_VM_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 45m
+          script_stop: true
           script: |
             set -euo pipefail
             export GITHUB_USER=crmgg
             export BRANCH=feature/notification-gateway
+            export CONFIG_SERVER_BRANCH=master
             export TARGET=/opt/uco-parking
+
+            echo "=== CD UCO Parking ==="
+            echo "Host: $(hostname) | Target: $TARGET | Branch: $BRANCH"
+
+            mkdir -p "$TARGET"
+
+            if [[ ! -f "$TARGET/deploy/scripts/clone-stack.sh" ]]; then
+              echo "=== Bootstrap (primera vez en esta VM) ==="
+              BOOT="$TARGET/_bootstrap-$$"
+              git clone --branch "$BRANCH" --depth 1 \
+                "https://github.com/${GITHUB_USER}/ucoparking-back.git" "$BOOT"
+              mkdir -p "$TARGET/deploy"
+              cp -r "$BOOT/deploy/." "$TARGET/deploy/"
+              chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
+              rm -rf "$BOOT"
+              echo "Bootstrap OK."
+            fi
+
+            if [[ ! -f "$TARGET/deploy/scripts/cd-remote.sh" ]]; then
+              echo "ERROR: no existe $TARGET/deploy/scripts/cd-remote.sh"
+              exit 1
+            fi
+
+            if [[ ! -f "$TARGET/deploy/.env" ]]; then
+              echo "ERROR: falta $TARGET/deploy/.env"
+              echo "En la VM ejecuta una vez:"
+              echo "  cd $TARGET/deploy && cp .env.example .env && nano .env"
+              echo "Luego vuelve a lanzar el workflow CD."
+              exit 1
+            fi
+
             bash "$TARGET/deploy/scripts/cd-remote.sh"
