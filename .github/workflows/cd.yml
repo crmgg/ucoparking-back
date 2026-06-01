@@ -84,4 +84,4 @@ jobs:
             chmod +x "$TARGET/deploy/deploy.sh" "$TARGET/deploy/scripts/"*.sh 2>/dev/null || true
 
             cd "$TARGET/deploy"
-            sg docker -c "bash deploy.sh"
+            sg docker -c "cd '$TARGET/deploy' && bash deploy.sh"
