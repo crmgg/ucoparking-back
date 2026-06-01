@@ -22,7 +22,12 @@ mkdir -p kong
 sed "s|__FRONTEND_ORIGIN__|${FRONTEND_PUBLIC_URL}|g" kong/kong.prod.yml.template > kong/kong.prod.yml
 
 echo "Desplegando stack UCO Parking..."
-docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+
+# Evita "No such container: <hash>_uco-config-server" cuando compose tiene estado viejo
+docker compose -f docker-compose.prod.yml --env-file .env down --remove-orphans 2>/dev/null || true
+docker rm -f uco-config-server uco-backend uco-frontend uco-kong uco-waf 2>/dev/null || true
+
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build --remove-orphans
 
 echo ""
 echo "Estado de contenedores:"
